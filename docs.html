@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مستندات فنی | موبینو</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;300;400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#09090B',
+                        surface: '#111827',
+                        primary: '#3B82F6',
+                        secondary: '#06B6D4',
+                        accent: '#8B5CF6',
+                        borderline: 'rgba(255,255,255,0.08)'
+                    },
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html { font-size: 90%; }
+        body {
+            background-color: #09090B;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: linear-gradient(180deg, rgba(17, 24, 39, 0.6) 0%, rgba(9, 9, 11, 0.8) 100%);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .text-gradient-primary {
+            background: linear-gradient(to left, #3B82F6, #06B6D4, #8B5CF6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .aurora-container {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .aurora-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.2;
+        }
+        .blob-1 { background: #3B82F6; width: 600px; height: 600px; top: -10%; right: -10%; }
+        .blob-2 { background: #8B5CF6; width: 500px; height: 500px; bottom: -10%; left: -10%; }
+
+        .doc-nav a { display: block; padding: 0.5rem 0.75rem; border-radius: 0.5rem; color: #9CA3AF; font-size: 0.875rem; transition: all 0.2s; }
+        .doc-nav a:hover { color: #fff; background: rgba(255,255,255,0.05); }
+        .doc-section h2 { font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 1rem; scroll-margin-top: 100px; }
+        .doc-section p { color: #9CA3AF; line-height: 2; margin-bottom: 1rem; }
+        .placeholder-block { border: 1px dashed rgba(255,255,255,0.15); border-radius: 0.75rem; padding: 1.5rem; color: #6B7280; font-size: 0.875rem; }
+    </style>
+</head>
+<body class="antialiased font-sans">
+
+    <div class="aurora-container">
+        <div class="aurora-blob blob-1"></div>
+        <div class="aurora-blob blob-2"></div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="fixed top-0 w-full z-50 bg-background/70 backdrop-blur-xl border-b border-borderline">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                    <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <rect x="8" y="8" width="8" height="8" rx="1.5" stroke-width="1.8"/>
+                        <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/>
+                        <path stroke-linecap="round" stroke-width="1.8" d="M12 2v4M12 18v4M2 12h4M18 12h4M5.5 5.5l2 2M16.5 5.5l-2 2M5.5 18.5l2-2M16.5 18.5l-2-2" />
+                    </svg>
+                </div>
+                <span class="text-lg font-bold tracking-tight text-white">موبینو</span>
+            </a>
+            <a href="/" class="text-sm text-gray-400 hover:text-white transition-colors">بازگشت به صفحه اصلی →</a>
+        </div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto px-6 pt-32 pb-24 flex gap-12">
+
+        <!-- Sidebar TOC -->
+        <aside class="hidden lg:block w-56 shrink-0">
+            <div class="sticky top-28 doc-nav space-y-1">
+                <p class="text-xs text-gray-500 font-mono uppercase tracking-wider px-3 mb-2">فهرست مطالب</p>
+                <a href="#overview">معرفی پروژه</a>
+                <a href="#architecture">معماری کلی سیستم</a>
+                <a href="#scraping">مرحله استخراج داده</a>
+                <a href="#ml-models">مدل‌های یادگیری ماشین</a>
+                <a href="#gemini">یکپارچه‌سازی Gemini AI</a>
+                <a href="#price-prediction">پیش‌بینی قیمت</a>
+                <a href="#stack">پشته فنی (Tech Stack)</a>
+                <a href="#future-work">جمع‌بندی و توسعه آینده</a>
+            </div>
+        </aside>
+
+        <!-- Content -->
+        <main class="flex-1 max-w-3xl">
+
+            <div class="mb-16">
+                <span class="text-secondary text-sm font-mono">مستندات فنی پروژه</span>
+                <h1 class="text-4xl font-black mt-2 mb-4"><span class="text-gradient-primary">موبینو</span></h1>
+                <p class="text-gray-400 leading-loose">
+                    این صفحه به‌منظور ارائه توضیحات فنی و دقیق پروژه موبینو، شامل معماری، خط پردازش داده، مدل‌های هوش مصنوعی و یادگیری ماشین استفاده‌شده، تهیه شده است.
+                </p>
+            </div>
+
+            <section id="overview" class="doc-section mb-16">
+                <h2>۱. معرفی پروژه</h2>
+				<div class="space-y-4 text-gray-300 leading-relaxed">
+						<p>
+							<strong>موبینو</strong> یک پلتفرم هوشمند، مدرن و نسل جدید تحلیل‌گر هوش مصنوعی موبایل است که برای حل مشکل ارزیابی، ارزش‌گذاری و مقایسه پیچیده گوشی‌های هوشمند طراحی شده است. در واقع این سیستم مثل یک ابزار هوشمند جستجو و تحلیل در حوزه e-commerce عمل می‌کند تا فرآیند تصمیم‌گیری خرید را برای کاربران ساده کند.
+						</p>
+						<p>
+							کاربر هدف این پلتفرم، خریداران گوشی‌های هوشمند و علاقه‌مندان به تکنولوژی هستند که در میان انبوهی از مشخصات فنی و نوسانات قیمت بازار دچار سردرگمی می‌شوند. در موبینو، کاربر فقط لینک محصول یا محصولات مورد نظر خود را از فروشگاه معتبر (مانند دیجی‌کالا) وارد می‌کند. سیستم در کسری از ثانیه مشخصات را استخراج کرده، ارزش خرید واقعی ریالی را محاسبه، قطعات را به صورت علمی امتیازدهی و یک نقد و بررسی تخصصی و مقایسه‌ای کاملاً هوشمند به کاربر ارائه می‌دهد.
+						</p>
+				</div>
+            </section>
+
+            <section id="architecture" class="doc-section mb-16">
+                <h2>۲. معماری کلی سیستم</h2>
+				<div class="space-y-4 text-gray-300 leading-relaxed">
+						<p>
+							معماری پردازش داده در موبینو به صورت یک Pipeline (جریان داده) ناهمگام، سریع و کاملاً یکپارچه در لایه‌های مختلف سامانه طراحی شده است تا بتواند به صورت همزمان تا ۵ لینک محصول را پردازش کند.
+						</p>
+						
+						<div class="my-8">
+							<p class="text-sm font-semibold text-white mb-3">نمودار مفهومی جریان داده در لایه‌های مختلف سامانه موبینو:</p>
+							<pre class="bg-black/40 p-5 rounded-xl border border-borderline text-cyan-400 font-mono text-xs overflow-x-auto leading-relaxed" dir="ltr">
+				┌────────────────────────────────────────────────────────┐
+				│                    1. ورود لینک کاربر                  │
+				│   (User Inputs Target Phone Page URL from Retailer)    │
+				└──────────────────────────┬─────────────────────────────┘
+										   │ (Async Event Triggered)
+										   ▼
+				┌────────────────────────────────────────────────────────┐
+				│             2. موتور استخراج پویای داده                │
+				│    (Async Playwright Launches Headless Chromium)       │
+				└──────────────────────────┬─────────────────────────────┘
+										   │ (Raw HTML Specs Extracted)
+										   ▼
+				┌────────────────────────────────────────────────────────┐
+				│              3. نگاشت و پاکسازی داده‌ها                 │
+				│        (Data Cleansing & Regex-based ETL)              │
+				└──────────────────────────┬─────────────────────────────┘
+										   │ (Normalized Hardware Features)
+										   ▼
+							┌──────────────┴──────────────┐
+							▼ (Parallel Execution)        ▼
+				┌───────────────────────┐   ┌────────────────────────────┐
+				│   4. مدل‌های امتیازدهی .5  |   |   یکپارچه‌سازی با Gemini│ 
+				│ (Mathematical Rules & │   │ (MSRP Detection & Critique)│
+				│  Symmetric Scoring)   │   └─────────────┬──────────────┘
+				└───────────┬───────────┘                 │ (Structured JSON Returned)
+							│                             ▼
+							│               ┌────────────────────────────┐
+							│               │    6. مدل پیش‌بینی قیمت     │
+							│               │ (CatBoost Regressor Model) │
+							│               └─────────────┬──────────────┘
+							▼                             ▼
+				┌────────────────────────────────────────────────────────┐
+				│          7. یکپارچه‌سازی نهایی و نمایش خروجی            │
+				│   (FastAPI Aggregates Payload to Tailwind Dash)        │
+				└────────────────────────────────────────────────────────┘</pre>
+						</div>
+
+						<p class="mt-4">
+							جریان گام‌به‌گام حرکت داده در این معماری به شرح زیر است:
+						</p>
+						<p>
+							ابتدا کاربر آدرس اینترنتی محصول را وارد می‌کند. سیستم درخواست را دریافت کرده و به بخش استخراج پویا ارسال می‌کند که در آنجا کدهای جاوااسکریپت سنگین رندر شده و جدول مشخصات استخراج می‌شود. پس از پاکسازی متون به کمک الگوهای منظم و ابزار Pandas، داده‌ها به دو مسیر موازی هدایت می‌شوند. در مسیر اول، مدل‌های امتیازدهی فرمولی و متقارن، نمراتی بین صفر تا صد برای قطعات فیزیکی (سخت‌افزار، دوربین، نمایشگر، باتری، طراحی و نرم‌افزار) محاسبه می‌کنند. در مسیر دوم، متغیرهای سخت‌افزاری به مدل Gemini ارسال می‌شوند تا قیمت پایه جهانی (MSRP) را با فرمت ساختاریافته استخراج کرده و یک نقد فنی مکتوب تولید کند. در نهایت، متغیرهای متنی کدگذاری‌شده به همراه فیلدهای ساختاریافته به موتور پیش‌بینی قیمت CatBoost تحویل داده می‌شوند تا ارزش منصفانه ریالی دستگاه برآورد گردد. خروجی یکپارچه نهایی توسط FastAPI تجمیع شده و به صورت یک داشبورد زیبا و مقایسه‌ای خودکار رندر می‌شود.
+						</p>
+				</div>
+            </section>
+
+            <section id="scraping" class="doc-section mb-16">
+                <h2>۳. مرحله استخراج داده (Scraping)</h2>
+				<div class="space-y-4 text-gray-300 leading-relaxed">
+						<p>
+							عملیات استخراج اطلاعات با استفاده از ابزار Playwright روی مرورگر Headless Chromium انجام می‌شود. از آنجا که صفحات فروشگاه‌های مدرن مانند دیجی‌کالا به صورت کاملاً داینامیک لود می‌شوند، ربات مستقیماً به صفحه محصول رفته و برای اطمینان از رندر شدن کامل اطلاعات، فرآیند اسکرول (تا ۱۲ گام) را شبیه‌سازی می‌کند. همچنین برای دسترسی به دیتای پنهان جداول مشخصات فنی، روی المان‌هایی مثل دکمه «مشاهده بیشتر» کلیک می‌کند تا ساختار درختی HTML کاملاً باز شود.
+						</p>
+
+						<div class="my-6">
+							<p class="text-sm font-semibold text-white mb-2">فیلدهای کلیدی استخراج‌شده در این مرحله:</p>
+							<table class="w-full text-right border-collapse text-sm text-gray-300">
+								<thead>
+									<tr class="border-b border-borderline bg-white/5">
+										<th class="p-3 font-semibold text-white">نام متغیر سیستم</th>
+										<th class="p-3 font-semibold text-white">نوع داده</th>
+										<th class="p-3 font-semibold text-white">توضیح عملکرد و اهمیت در ارزیابی</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr class="border-b border-white/5">
+										<td class="p-3 font-mono text-cyan-400">product_title / product_name_fa</td>
+										<td class="p-3">رشته (String)</td>
+										<td class="p-3">نام تجاری و فارسی دقیق دستگاه؛ جهت انطباق داده‌ها، تفکیک قالب و نمایش در داشبورد.</td>
+									</tr>
+									<tr class="border-b border-white/5">
+										<td class="p-3 font-mono text-cyan-400">product_name_en</td>
+										<td class="p-3">رشته (String)</td>
+										<td class="p-3">نام انگلیسی محصول؛ حیاتی برای شناسایی دقیق مدل و ارسال به پرامپت Gemini.</td>
+									</tr>
+									<tr class="border-b border-white/5">
+										<td class="p-3 font-mono text-cyan-400">brand</td>
+										<td class="p-3">دسته‌ای (Categorical)</td>
+										<td class="p-3">برند سازنده؛ یکی از مهم‌ترین ویژگی‌ها در مدل قیمت‌گذاری محلی و کلاسبندی بازار.</td>
+									</tr>
+									<tr class="border-b border-white/5">
+										<td class="p-3 font-mono text-cyan-400">chipset_model</td>
+										<td class="p-3">دسته‌ای (Categorical)</td>
+										<td class="p-3">تراشه پردازنده؛ برای ارزیابی قدرت سخت‌افزاری، محاسبه امتیاز پردازش و پیش‌بینی رده قیمتی.</td>
+									</tr>
+									<tr class="border-b border-white/5">
+										<td class="p-3 font-mono text-cyan-400">ram_capacity</td>
+										<td class="p-3">عددی (Integer)</td>
+										<td class="p-3">میزان حافظه موقت بر حسب گیگابایت؛ جهت سنجش عملکرد مالتی‌تسکینگ سیستم.</td>
+									</tr>
+									<tr class="border-b border-white/5">
+										<td class="p-3 font-mono text-cyan-400">storage_capacity</td>
+										<td class="p-3">عددی (Integer)</td>
+										<td class="p-3">ظرفیت حافظه داخلی بر حسب گیگابایت؛ تعیین‌کننده کلاس دستگاه و قیمت کاستومایز شده.</td>
+									</tr>
+									<tr class="border-b border-white/5">
+										<td class="p-3 font-mono text-cyan-400">screen_tech</td>
+										<td class="p-3">دسته‌ای (Categorical)</td>
+										<td class="p-3">فناوری پنل (AMOLED, LCD) و نرخ نوسازی تصویر بر حسب هرتز جهت امتیازدهی نمایشگر.</td>
+									</tr>
+									<tr class="border-b border-white/5">
+										<td class="p-3 font-mono text-cyan-400">primary_camera_mp</td>
+										<td class="p-3">عددی (Float)</td>
+										<td class="p-3">کیفیت اسمی دوربین اصلی بر حسب مگاپیکسل برای پپالاین امتیازدهی دوربین.</td>
+									</tr>
+									<tr class="border-b border-white/5">
+										<td class="p-3 font-mono text-cyan-400">battery_size</td>
+										<td class="p-3">عددی (Integer)</td>
+										<td class="p-3">ظرفیت باتری بر حسب میلی‌آمپر ساعت به همراه توان و سرعت شارژ دریافتی.</td>
+									</tr>
+									<tr class="border-b border-white/5">
+										<td class="p-3 font-mono text-cyan-400">price / market_price_irr</td>
+										<td class="p-3">عددی (Float)</td>
+										<td class="p-3">قیمت ریالی درج شده در فروشگاه مبدأ با هندل کردن ساختارهای متغیر؛ برای محاسبه نهایی حباب قیمتی بازار ایران.</td>
+									</tr>
+									<tr class="border-b border-white/5">
+										<td class="p-3 font-mono text-cyan-400">image_url</td>
+										<td class="p-3">رشته (String)</td>
+										<td class="p-3">لینک تصویر اصلی محصول؛ جهت نمایش فوری و بصری در فرانت‌اند کامپوننت‌ها.</td>
+									</tr>
+									<tr class="border-b border-white/5">
+										<td class="p-3 font-mono text-cyan-400">specifications</td>
+										<td class="p-3">دیکشنری (JSON/Dict)</td>
+										<td class="p-3">ساختار دست‌نخورده از تمام جفت‌های کلید-مقدار مشخصات فنی برای مپرهای توسعه‌یافته پایتون.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+
+						<div class="my-6">
+							<p class="text-sm font-semibold text-white mb-2">پیاده‌سازی نمونه ماژول استخراج داده ناهمگام با Playwright:</p>
+							<pre class="bg-black/40 p-5 rounded-xl border border-borderline text-green-400 font-mono text-xs overflow-x-auto leading-relaxed" dir="ltr">
+				import asyncio
+				from playwright.async_api import async_playwright
+
+				async def async_extract_phone_specs(target_url: str) -> dict:
+					"""
+					استخراج مشخصات فنی تلفن همراه از وب‌سایت‌های پویا به صورت غیرمسدودکننده 
+					"""
+					async with async_playwright() as pw:
+						# راه‌اندازی مرورگر به صورت ناهمگام برای بهینه‌سازی همزمانی 
+						browser = await pw.chromium.launch(headless=True)
+						# تخصیص User-Agent جهت دور زدن مکانیزم‌های ضد بات پایه‌ای 
+						context = await browser.new_context(
+							user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+						)
+						page = await context.new_page()
+						
+						try:
+							# بارگذاری صفحه و انتظار برای اتمام کامل اتصالات شبکه
+							await page.goto(target_url, wait_until="networkidle", timeout=45000)
+							
+							# استخراج داده‌ها با استفاده از سلکتورهای CSS دقیق
+							extracted_title = await page.locator("h1.product-title-fa").inner_text()
+							extracted_price = await page.locator(".product-price-value").inner_text()
+							specs_container = await page.locator(".technical-specs-table").inner_html()
+							
+							return {
+								"status": "success",
+								"title": extracted_title.strip(),
+								"raw_price": extracted_price.strip(),
+								"raw_html_specs": specs_container
+							}
+						except Exception as err:
+							return {"status": "failed", "error_message": str(err)}
+						finally:
+							await browser.close()</pre>
+						</div>
+				</div>
+            </section>
+
+            <section id="ml-models" class="doc-section mb-16">
+                <h2>۴. مدل‌های یادگیری ماشین</h2>
+				<div class="space-y-6 text-gray-300 leading-relaxed">
+						
+						<div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-5 my-4">
+							<h3 class="text-white font-semibold text-base mb-2 flex items-center">
+								<span class="bg-blue-500 text-black text-xs px-2 py-0.5 rounded font-mono mr-2">مفهوم پایه</span>
+								الگوریتم CatBoost چیست و چگونه کار می‌کند؟ 
+							</h3>
+							<p class="text-sm text-gray-300">
+								الگوریتم <strong>CatBoost</strong> (مخفف Categorical Boosting) یک کتابخانه قدرتمند یادگیری ماشین بر پایه «درخت تصمیم‌گیری» است. برای درک ساده، یک درخت تصمیم مانند یک نمودار درختی از سوالات بله/خیر است (مثلاً: آیا رم بالای ۸ است؟ بله $\leftarrow$ آیا پنل AMOLED است؟). 
+								اصطلاح <strong>Boosting</strong> یعنی ما به جای یک درخت، صدها درخت را پشت سر هم می‌سازیم؛ به طوری که هر درخت جدید وظیفه دارد اشتباهات و خطاهای درختان قبلی را اصلاح کند تا به دقیق‌ترین پاسخ برسد.
+							</p>
+							<p class="text-sm text-gray-300 mt-2">
+								<strong>چرا CatBoost؟</strong> دو دلیل اصلی برای انتخاب این مدل در پروژه موبینو وجود دارد: <br/>
+								۱) <strong>مدیریت داده‌های متنی (Categorical):</strong> مشخصات گوشی‌ها پر از متن است (مثل برند: سامسونگ، تکنولوژی نمایشگر: AMOLED). مدل‌های معمولی ریاضی متن را نمی‌فهمند و باید آن‌ها را با کدهای پیچیده به عدد تبدیل کرد که باعث افت دقت می‌شود، اما CatBoost این متغیرهای متنی را به صورت ذاتی و با فرمول‌های پیشرفته به عددی هوشمند تبدیل می‌کند.<br/>
+								۲) <strong>درختان متقارن (Symmetric Trees):</strong> این الگوریتم درخت‌هایی کاملاً متقارن می‌سازد که باعث می‌شود سرعت پردازش آن در بک‌اند فوق‌العاده بالا باشد و دچار پدیده بیش‌برازش (Overfitting یا حفظ کردن طوطی‌وار داده‌ها) نشود.
+							</p>
+						</div>
+
+						<p>
+							در سامانه موبینو، فرآیند ارزیابی کیفی قطعات به جای فرمول‌نویسی دستی سنتی، به <strong>۶ مدل تخصصی و مجزای CatBoost Regressor</strong> سپرده شده است. وظیفه این مدل‌ها این است که مشخصات فنی خام استخراج‌شده را دریافت کرده و به هر بخش از سخت‌افزار گوشی، امتیازی علمی بین <span class="text-cyan-400 font-mono">۰ تا ۱۰۰</span> تخصیص دهند.
+						</p>
+
+						<h3 class="text-lg font-semibold text-white mt-4">الف) تفکیک ۶ مدل تخصصی و امتیازات خروجی</h3>
+						<p>هر کدام از این ۶ مدل به صورت مستقل بر روی ویژگی‌های (Features) مرتبط با خود تمرکز دارند:</p>
+						<ul class="list-disc list-inside space-y-2 pr-4 text-sm text-gray-300">
+							<li><strong class="text-white">۱. مدل سخت‌افزار و عملکرد (Performance Score):</strong> امتیاز قدرت پردازشی را بر اساس متغیرهایی چون <span class="text-cyan-400 font-mono">chipset_score</span> (قدرت بنچمارک تراشه)، ظرفیت رم (<span class="text-cyan-400 font-mono">ram_gb</span>) و نوع حافظه داخلی (<span class="text-cyan-400 font-mono">storage_type</span> مانند UFS یا eMMC) پیش‌بینی می‌کند.</li>
+							<li><strong class="text-white">۲. مدل سیستم دوربین (Camera Score):</strong> کیفیت عکاسی و فیلم‌برداری را بر اساس مگاپیکسل دوربین اصلی، تعداد دوربین‌ها (<span class="text-cyan-400 font-mono">rear_camera_count</span>)، وجود سنسورهای فوق‌عریض (Ultrawide)، ماکرو، تله‌فوتو، پریسکوپ، لرزشگیر اپتیکال (<span class="text-cyan-400 font-mono">OIS</span>)، مگاپیکسل سلفی و رزولوشن و فریم‌ریت ویدیوها ارزیابی می‌کند.</li>
+							<li><strong class="text-white">۳. مدل کیفیت نمایشگر (Display Score):</strong> پنل را بر اساس ابعاد صفحه، تراکم پیکسلی (<span class="text-cyan-400 font-mono">display_ppi</span>)، فناوری پنل (<span class="text-cyan-400 font-mono">display_tech</span>)، نرخ نوسازی تصویر (<span class="text-cyan-400 font-mono">refresh_rate_hz</span>)، میزان روشنایی بر حسب نیت و وضعیت پشتیبانی از HDR بررسی می‌کند.</li>
+							<li><strong class="text-white">۴. مدل باتری و شارژدهی (Battery Score):</strong> بازدهی منبع تغذیه را بر اساس ظرفیت باتری (<span class="text-cyan-400 font-mono">battery_capacity_mah</span>)، توان شارژ سیمی (<span class="text-cyan-400 font-mono">wired_charging_power</span>) و پشتیبانی یا عدم پشتیبانی از شارژ بی‌سیم محاسبه می‌کند.</li>
+							<li><strong class="text-white">۵. مدل طراحی و کیفیت ساخت (Design Score):</strong> ارگونومی و متریال بدنه را بر اساس وزن گوشی، ضخامت، جنس پنل پشتی (شیشه، پلاستیک)، جنس فریم (آلومینیوم، پلاستیک)، نوع ساختار بدنه (Foldable یا Bar) و گواهی ضدآب و گرد و غبار (<span class="text-cyan-400 font-mono">IP_Rating</span>) اندازه می‌گیرد.</li>
+							<li><strong class="text-white">۶. مدل نرم‌افزار و ارتباطات (Software & Connectivity):</strong> پایداری دستگاه را بر اساس سیستم‌عامل و نسخه آن (مثلاً اندروید ۱۴)، گام ارتباطی سیم‌کارت (5G یا 4G)، پشتیبانی از eSIM و فناوری‌های ارتباطی نوین ارزیابی می‌کند.</li>
+						</ul>
+
+						<h3 class="text-lg font-semibold text-white mt-6">ب) نحوه آموزش مدل‌ها (Training Phase)</h3>
+						<p>
+							این ۶ مدل بر روی یک دیتاست اختصاصی به نام <span class="text-cyan-400 font-mono">review_model_dataset.csv</span> شامل صدها رکورد از انواع گوشی‌های هوشمند بازار آموزش دیده‌اند. روند مهندسی و آموزش داده‌ها در فایل <span class="text-cyan-400 font-mono">training.py</span> به شرح زیر پیاده‌سازی شده است:
+						</p>
+						<ol class="list-decimal list-inside space-y-2 pr-4 text-sm">
+							<li><strong>پاکسازی و حذف فیچرهای مخل:</strong> نام متنی چیپست‌ها (به دلیل تنوع بیش از حد و ایجاد خطای خارج از دایره واژگان یا OOV) حذف شده و جای آن را یک امتیاز عددی استانداردِ از پیش‌محاسبه‌شده پر کرده است. همچنین فیلد نام محصول و امتیاز نهایی کلی حذف شده‌اند تا مدل‌ها تقلب نکنند.</li>
+							<li><strong>تقسیم‌بندی داده‌ها (Train/Validation Split):</strong> داده‌های دیتاست به نسبت <span class="text-white font-semibold">۸۰٪ برای آموزش</span> و <span class="text-white font-semibold">۲۰٪ برای اعتبارسنجی (تست)</span> تفکیک شده‌اند. این کار برای این است که مطمئن شویم مدل واقعاً الگوها را یاد گرفته است و صرفاً داده‌ها را حفظ نکرده است.</li>
+							<li><strong>تنظیم ابرپارامترها (Hyperparameters):</strong> مدل‌ها با نرخ یادگیری (<span class="text-cyan-400 font-mono">learning_rate=0.05</span>)، عمق درخت ۶ لایه (<span class="text-cyan-400 font-mono">depth=6</span>) و حداکثر ۱۰۰۰ تکرار آموزش دیده‌اند. مکانیزم <span class="text-white font-semibold">Early Stopping</span> روی ۵۰ دور تنظیم شده است؛ یعنی اگر مدل بعد از ۵۰ مرحله دیگر نتوانست دقتی ملموس روی داده‌های تست کسب کند، آموزش را متوقف کن تا از اوورفیت جلوگیری شود.</li>
+							<li><strong>معیار سنجش خطا:</strong> تابع زیان مدل بر اساس فرمول ریاضی <span class="text-white font-semibold">RMSE</span> (ریشه میانگین مربعات خطا) خطاها را مجذور کرده تا اشتباهات بزرگتر را بیشتر جریمه کند، و ارزیابی نهایی با معیار <span class="text-white font-semibold">MAE</span> (میانگین قدرمطلق خطا) صورت گرفته است.</li>
+						</ol>
+
+						<p class="text-xs bg-white/5 border border-white/5 p-3 rounded-lg text-gray-400 font-mono">
+							نکته فنی: پس از اتمام این مرحله و پیش‌بینی امتیازات ۶ گانه، پورتال موبینو به صورت ریاضی و با استفاده از میانگین وزنی (تأثیر ۲۵٪ سخت‌افزار، ۲۰٪ دوربین، ۲۰٪ نمایشگر، ۱۵٪ باتری، ۱۰٪ طراحی، ۱۰٪ نرم‌افزار) امتیاز کلی دستگاه (Overall Score) را بدون دخالت دستی محاسبه می‌کند.
+						</p>
+				</div>
+            </section>
+
+            <section id="gemini" class="doc-section mb-16">
+                <h2>۵. یکپارچه‌سازی Gemini AI</h2>
+				<div class="space-y-4 text-gray-300 leading-relaxed">
+						<p>
+							در این پروژه، از هوش مصنوعی گوگل (Gemini API) در دو نقش کاملاً کلیدی و محاسباتی استفاده شده است تا کیفیت خروجی را ارتقا دهد:
+						</p>
+						<ol class="list-decimal list-inside space-y-2 pr-4">
+							<li><strong>تخمین قیمت جهانی (MSRP):</strong> مدل هوش مصنوعی وظیفه دارد قیمت پایه و ارزی (Launch MSRP در زمان معرفی اولیه) هر دستگاه را در قالب دلار تشخیص دهد تا این عدد به عنوان یک فیچر کلیدی وارد مدل ML پیش‌بینی قیمت تومانی شود.</li>
+							<li><strong>نگارش نقد و بررسی تخصصی و مقایسه‌ای:</strong> برای کاهش تاخیر (Latency) و بهینه‌سازی تعداد فراخوانی‌های API، سیستم به جای ارسال درخواست‌های جداگانه، اطلاعات خام تمام گوشی‌های انتخابی کاربر را در قالب یک Request واحد و تجمیع‌شده به Gemini ارسال می‌کند تا یک تحلیل بی‌پایان، فنی و کاملاً مقایسه‌ای به زبان فارسی تولید کند.</li>
+						</ol>
+
+						<div class="my-6">
+							<p class="text-sm font-semibold text-white mb-2">نمونه پرامپت ارسالی برای سیستم نقد و بررسی تخصصی موبینو:</p>
+							<div class="bg-black/30 p-5 rounded-xl border border-borderline text-gray-300 text-xs font-mono leading-relaxed text-left" dir="ltr">
+								System Instruction: You are an expert mobile hardware reviewer writing for a university-level mobile portal.
+								<br/><br/>
+								Prompt:
+								Analyze the following phone specification payload and write an unbiased, professional critique in Persian.
+								Additionally, return the estimated global MSRP in USD.
+								Specifications:
+								{
+									"brand": "Samsung",
+									"model": "Galaxy A55",
+									"processor": "Exynos 1480",
+									"ram": "8GB",
+									"storage": "256GB",
+									"display": "Super AMOLED 120Hz"
+								}
+								Return the output in clean JSON conforming to the defined response schema. No code fences.
+							</div>
+						</div>
+
+						<p class="mt-4">
+							خروجی نهایی این مدل، یک داده کاملاً تمیز و ولیدیت شده با فرمت JSON است که از اسکیما (Schema) ساختاریافته زیر پیروی می‌کند تا در فرانت‌اند بدون خطا پارس شود:
+						</p>
+						<pre class="bg-black/40 p-5 rounded-xl border border-borderline text-cyan-400 font-mono text-xs overflow-x-auto leading-relaxed" dir="ltr">
+				{
+				  "overview": "توضیح کلی و مقایسه‌ای (۲ تا ۴ پاراگراف مکتوب با ادبیات آکادمیک و فنی)",
+				  "phones": [
+					{
+					  "name": "نام دقیق دستگاه",
+					  "buy_if": ["۳ دلیل منطقی و سخت‌افزاری برای خریدن این گوشی"],
+					  "pros": ["۴ نقطه قوت کلیدی بر اساس جداول مشخصات"],
+					  "cons": ["۳ نقطه ضعف یا کمبود فنی نسبت به رقبا"],
+					  "summary": "یک پاراگراف خلاصه وضعیت عملکردی دستگاه"
+					}
+				  ],
+				  "final_recommendation": {
+					"best_value": "بهترین گوشی از نظر ارزش خرید",
+					"best_camera": "بهترین عملکرد سیستم دوربین",
+					"best_performance": "بهترین پردازشگر و سخت‌افزار",
+					"best_battery": "بهترین بازدهی باتری و سرعت شارژ",
+					"best_for_most_users": "مناسب‌ترین گزینه برای عموم کاربران",
+					"conclusion": "جمع‌بندی نهایی سیستم نقد و بررسی"
+				  }
+				}</pre>
+
+						<div class="my-6">
+							<p class="text-sm font-semibold text-white mb-2">پیاده‌سازی کد اتصال به Gemini API با الگوواره پاسخ کاملاً معتبر:</p>
+							<pre class="bg-black/40 p-5 rounded-xl border border-borderline text-green-400 font-mono text-xs overflow-x-auto leading-relaxed" dir="ltr">
+				import google.generativeai as genai
+				from google.generativeai.types import generation_types
+
+				# تنظیم اولیه کلاینت با کلید اختصاصی
+				genai.configure(api_key="YOUR_GEMINI_API_KEY")
+
+				# تعریف دقیق ساختار خروجی مورد انتظار جهت جلوگیری از خطای پارسینگ
+				response_schema = {
+					"type": "object",
+					"properties": {
+						"estimated_msrp_usd": {
+							"type": "integer",
+							"description": "The estimated global launching price of the mobile phone in USD"
+						},
+						"technical_critique": {
+							"type": "string",
+							"description": "Comprehensive, unbiased hardware critique written in academic Persian"
+						},
+						"value_tier": {
+							"type": "string",
+							"enum": ["Entry-Level", "Mid-Range", "Flagship"]
+						}
+					},
+					"required": ["estimated_msrp_usd", "technical_critique", "value_tier"]
+				}
+
+				async def generate_ai_analysis(specs_data: str) -> str:
+					# استفاده از مدل‌های دارای قابلیت پشتیبانی از طرح‌واره داده 
+					model = genai.GenerativeModel("gemini-1.5-pro-latest")
+					response = await model.generate_content_async(
+						f"Perform an in-depth hardware review for this phone spec: {specs_data}",
+						generation_config=generation_types.GenerationConfig(
+							response_mime_type="application/json", # الزام مدل به خروجی خام JSON
+							response_schema=response_schema, # اعمال هماهنگ‌کننده طرح‌واره ساختاری 
+							temperature=0.2 # تنظیم خلاقیت در کمترین حالت جهت افزایش ثبات و مستندبودن ارزیابی
+						)
+					)
+					return response.text</pre>
+						</div>
+				</div>
+            </section>
+
+            <section id="price-prediction" class="doc-section mb-16">
+                <h2>۶. پیش‌بینی قیمت بازار</h2>
+				<div class="space-y-6 text-gray-300 leading-relaxed">
+						
+						<p>
+							یکی از خلاقانه‌ترین و متمایزترین لایه‌های فنی سامانه موبینو، لایه پیش‌بینی قیمت منصفانه ریالی (<span class="text-cyan-400 font-mono">price_toman</span>) است. این بخش وظیفه دارد مشخص کند یک گوشی با توجه به شرایط اقتصادی جاری ایران و ویژگی‌های کیفی‌اش، چقدر می‌ارزد تا با مقایسه آن با قیمت واقعی فروشگاه، وجود یا عدم وجود <strong class="text-white">«حباب قیمتی»</strong> را برای خریدار آشکار کند.
+						</p>
+
+						<div class="my-4 p-4 bg-black/30 border border-borderline rounded-xl">
+							<p class="text-xs font-semibold text-white mb-2">💡 خط لوله فیچرهای ورودی به مدل رگرسیون قیمت (تلفیق اقتصاد و کیفیت):</p>
+							<div class="flex flex-wrap gap-2 text-xs font-mono">
+								<span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-cyan-400">حافظه (Storage)</span>
+								<span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-cyan-400">رم (RAM)</span>
+								<span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-green-400">نرخ روز دلار (DollarRate)</span>
+								<span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-green-400">قیمت دلاری جهانی (LaunchMSRP)</span>
+								<span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-amber-400">سن دستگاه (age)</span>
+								<span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-purple-400">امتیاز چیپست (chipset_score)</span>
+								<span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-purple-400">امتیاز دوربین (Camera Score)</span>
+								<span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-purple-400">امتیاز نمایشگر (Display Score)</span>
+								<span class="px-2 py-1 bg-white/5 border border-white/10 rounded text-pink-400">کلاس بازار (market_tier_bracket)</span>
+							</div>
+							<div class="text-center my-2 text-gray-500 font-sans text-xs">▼ ورود به موتور قیمت‌گذاری هوش مصنوعی ▼</div>
+							<div class="text-center text-green-400 font-mono text-sm font-semibold bg-green-500/10 p-2 rounded border border-green-500/20">خروجی نهایی: قیمت کارشناسی شده به تومان (Fair Market Price)</div>
+						</div>
+
+						<h3 class="text-lg font-semibold text-white mt-4">الف) مهندسی ویژگی‌ها و معماری مدل قیمت</h3>
+						<p>
+							بر خلاف مدل‌های بخش قبل که صرفاً فیزیک گوشی را می‌سنجیدند، این مدل (که کدهای تمرین آن در فایل <span class="text-cyan-400 font-mono">trainprice2.py</span> قرار دارد) یک <strong>مدل رگرسیون ترکیبی اقتصاد-محور</strong> است. این مدل آموخته است که قیمت یک کالا در بازار ایران تابعی مجزا از مشخصات سخت‌افزاری محض است. ورودی‌های کلیدی مدل عبارتند از:
+						</p>
+						<ul class="list-disc list-inside space-y-2 pr-4 text-sm text-gray-300">
+							<li><strong class="text-white">فاکتورهای اقتصادی ایران:</strong> نرخ فعلی و زنده دلار تومانی در بازار آزاد (<span class="text-cyan-400 font-mono">DollarRate</span>) که لایه پویای ارز را مدیریت می‌کند.</li>
+							<li><strong class="text-white">هویت جهانی کالا:</strong> قیمت عرضه جهانی به دلار (<span class="text-cyan-400 font-mono">LaunchMSRP</span>) که در گام ۵ توسط هوش مصنوعی Gemini به صورت کاملاً ساختاریافته از دیتابیس‌های جهانی استخراج شده و به این مدل تغذیه می‌شود.</li>
+							<li><strong class="text-white">افت قیمت و استهلاک (Depreciation):</strong> متغیر سن دستگاه (<span class="text-cyan-400 font-mono">age</span>) بر حسب تعداد سال‌های سپری‌شده از زمان رونمایی؛ چرا که گوشی‌های قدیمی‌تر حتی با مشخصات بالا، به دلیل اتمام چرخه آپدیت نرم‌افزاری دچار افت ارزش اصولی می‌شوند.</li>
+							<li><strong class="text-white">فیدبک‌های کیفی هوش مصنوعی خط لوله:</strong> جالب‌ترین بخش اینجاست که خروجی مدل‌های بخش ۴ (یعنی امتیازهای نهایی محاسبه‌شده برای <span class="text-white">سیستم دوربین</span> و <span class="text-white">نمایشگر</span> به همراه امتیاز سخت‌افزاری چیپست) به عنوان ویژگی‌های ورودی به این مدل پاس داده می‌شوند. این یعنی مدل قیمت‌گذاری، کیفیت واقعی قطعات را هم در وزن‌دهی نهایی خود دخیل می‌کند.</li>
+							<li><strong class="text-white">متغیر دسته‌ای کلاس بازار:</strong> رده‌بندی دستگاه (<span class="text-cyan-400 font-mono">market_tier_bracket</span>) شامل دسته‌های میان‌رده، پرچمدار و اقتصادی به عنوان متغیر متنی کلاسیک.</li>
+						</ul>
+
+						<h3 class="text-lg font-semibold text-white mt-6">ب) نحوه پردازش و یادگیری مدل قیمت (Dataset & Pipeline)</h3>
+						<p>
+							مدل نهایی با بهره‌گیری از فایل داده‌های تاریخی بازار ایران (<span class="text-cyan-400 font-mono">train_price_dataset_1.csv</span>) آموزش دیده است. خط لوله پردازش آن شامل مراحل ظریف زیر است:
+						</p>
+						<ol class="list-decimal list-inside space-y-2 pr-4 text-sm">
+							<li><strong>حذف نویز و تجمیع گروهی (Grouping):</strong> برای جلوگیری از نوسانات لحظه‌ای و رفتار نامنظم فروشندگان، داده‌ها ابتدا بر اساس تمام فیلدهای سخت‌افزاری و قیمتی یکسان گروه‌بندی شده و میانگین قیمت تومانی آن‌ها محاسبه شده است (<span class="text-cyan-400 font-mono">df.groupby().mean()</span>) تا دیتایی کاملاً منسجم و بدون داده پرت (Outlier) به دست آید.</li>
+							<li><strong>کدگذاری خودکار هدف‌محور:</strong> متغیر متنی کلاس گوشی (مانند Flagship) با متد آکادمیک <span class="text-white font-semibold">Ordered Target Encoding</span> به مقادیر عددی هموار تبدیل شده است تا ریسک لو رفتن یا نشت داده‌ها در فرآیند تست وجود نداشته باشد.</li>
+							<li><strong>ارزیابی و تست مدل:</strong> برای ارزیابی خروجی، دیتاست به بخش‌های تست و آموزش تقسیم شده و دو شاخص کلیدی ریاضی برای اثبات پرفورمنس مدل به استاد استخراج گردیده است:
+								<br/> - <strong class="text-white">معیار MAE (میانگین خطای مطلق):</strong> میانگین اختلاف قیمت پیش‌بینی‌شده مدل با قیمت واقعی بازار بر حسب تومان را نشان می‌دهد.
+								<br/> - <strong class="text-white">شاخص $R^2$ (ضریب تعیین):</strong> معیاری بین ۰ تا ۱ که نشان می‌دهد مدل چقدر توانسته است تغییرات قیمت تومانی بازار را پوشش دهد (اعداد نزدیک به ۱ نشان‌دهنده انطباق عالی مدل با واقعیت اقتصاد بازار است).</li>
+							<li><strong>آموزش نهایی ۱۰۰ درصدی:</strong> پس از اطمینان از بالا بودن نمره $R^2$ و پایین بودن خطای MAE در لایه تست، مدل یک بار دیگر روی <span class="text-white font-semibold">۱۰۰٪ کل داده‌های موجود بازار</span> بازآموزی (Retrain) شده و خروجی آن در قالب فایل باینری استاندارد <span class="text-cyan-400 font-mono">phone_price_model.cbm</span> ذخیره شده است تا در سرور FastAPI برای کاربران نهایی فراخوانی شود.</li>
+						</ol>
+
+						<p class="text-sm bg-white/5 p-4 rounded-xl border border-borderline">
+							<span class="text-amber-400 font-semibold">نتیجه کاربردی در داشبورد:</span> در نهایت وقتی کاربر لینک گوشی را وارد می‌کند، این مدل قیمت عادلانه آن را مثلاً ۳۲,۰۰۰,۰۰۰ تومان تخمین می‌زند. اگر قیمت فروشگاه ۳۶,۰۰۰,۰۰۰ تومان باشد، سیستم بلافاصله با کسر این دو عدد از یکدیگر به کاربر اعلام می‌کند که این محصول دارای ۴,۰۰۰,۰۰۰ تومان حباب قیمتی غیرمنطقی است و ارزش خرید پایینی دارد.
+						</p>
+				</div>
+            </section>
+
+            <section id="stack" class="doc-section mb-16">
+                <h2>۷. پشته فنی (Tech Stack)</h2>
+				<div class="space-y-4 text-gray-300 leading-relaxed">
+						<p>
+							برای طراحی، توسعه و استقرار سیستم هوشمند موبینو، از معماری ماژولار و ترکیبی از ابزارها، پکیج‌ها و فریم‌ورک‌های مدرن مهندسی داده و نرم‌افزار استفاده شده است:
+						</p>
+
+						<div class="my-6">
+							<p class="text-sm font-semibold text-white mb-2">لیست ابزارها و پشته تکنولوژی‌های استفاده‌شده در توسعه سامانه موبینو:</p>
+							<table class="w-full text-right border-collapse text-sm text-gray-300">
+								<thead>
+									<tr class="border-b border-borderline bg-white/5">
+										<th class="p-3 font-semibold text-white">نام تکنولوژی</th>
+										<th class="p-3 font-semibold text-white">نقش در سامانه</th>
+										<th class="p-3 font-semibold text-white">علت انتخاب و مزیت فنی</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr class="border-b border-white/5">
+										<td class="p-3 font-medium text-white">FastAPI</td>
+										<td class="p-3 font-mono text-cyan-400">فریم‌ورک وب بک‌اند</td>
+										<td class="p-3">توسعه یافته بر پایه استانداردهای مدرن پایتون (ASGI)؛ اجرای کاملاً غیرمسدودکننده (Async) درخواست‌ها به همراه پرفورمنس بسیار بالا و تولید داکیومنت اتوماتیک Swagger.</td>
+									</tr>
+									<tr class="border-b border-white/5">
+										<td class="p-3 font-medium text-white">Playwright</td>
+										<td class="p-3 font-mono text-cyan-400">موتور استخراج داده وب</td>
+										<td class="p-3">سرعت رندر و ثبات بی‌نظیر برای ردیابی و شبیه‌سازی رفتار کاربر در صفحات پویا (SPA) و مدیریت ارتباط چندمرورگری ناهمگام.</td>
+									</tr>
+									<tr class="border-b border-white/5">
+										<td class="p-3 font-medium text-white">Pandas</td>
+										<td class="p-3 font-mono text-cyan-400">تحلیل و پیش‌پردازش داده‌ها</td>
+										<td class="p-3">پاکسازی پیشرفته جداول سخت‌افزاری استخراج‌شده، پیاده‌سازی متدهای ساختاریافته ETL و اعمال کدهای تمیزکاری داده‌ها به صورت وکتورایز شده و سریع.</td>
+									</tr>
+									<tr class="border-b border-white/5">
+										<td class="p-3 font-medium text-white">CatBoost Regressor</td>
+										<td class="p-3 font-mono text-cyan-400">هسته هوش مصنوعی پیش‌بینی قیمت</td>
+										<td class="p-3">الگوریتم پرقدرت گرادیان بوستینگ بر روی درخت‌های تصمیم متقارن با کارایی فوق‌العاده روی متغیرهای متنی و داده‌های دسته‌ای غیرعددی (Categorical).</td>
+									</tr>
+									<tr class="border-b border-white/5">
+										<td class="p-3 font-medium text-white">Google Gemini API</td>
+										<td class="p-3 font-mono text-cyan-400">موتور نقد و بررسی کیفی</td>
+										<td class="p-3">تولید ساختاریافته تحلیل‌های فارسی، تفکیک داده‌های مبهم و برآورد دقیق MSRP در قالب طرح‌واره‌های ایمن، تایپ‌شده و اجباری JSON.</td>
+									</tr>
+									<tr class="border-b border-white/5">
+										<td class="p-3 font-medium text-white">Tailwind CSS</td>
+										<td class="p-3 font-mono text-cyan-400">طراحی فرانت‌اند و استایل وب</td>
+										<td class="p-3">توسعه سریع رابط کاربری واکنش‌گرا (Responsive) و فوق‌العاده سبک با استفاده از کلاس‌های کمکی و پیاده‌سازی تم تیره و افکت شیشه‌ای (Glassmorphism) مدرن استارتاپی.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+
+						<p class="mt-6 font-semibold text-white">توجیه علمی و ریاضی انتخاب الگوریتم یادگیری ماشین:</p>
+						<p>
+							انتخاب الگوریتم <strong>CatBoost</strong> به عنوان مدل پیش‌بینی‌کننده ارزش منصفانه ریالی دستگاه، بر اساس محاسبات علمی دقیقی صورت پذیرفته است. در داده‌های سنتی بازار تلفن همراه، فیلدهای دسته‌ای با تنوع بسیار بالا (High-Cardinality Categorical Features) مانند نام پردازنده‌ها یا تنوع برندها وجود دارند. مدل‌های رگرسیون معمولی یا حتی خانواده درختان تصمیم نظیر XGBoost در پردازش این متغیرها نیاز به فرآیندهایی نظیر کدگذاری یک‌بار-داغ (One-Hot Encoding) دارند که به شدت باعث افزایش ابعاد داده‌ها (Sparsity) و در نتیجه پدیده بیش‌برازش (Overfitting) می‌شود.
+						</p>
+						<p>
+							الگوریتم CatBoost با مهار هوشمندانه این نقیصه، مکانیزم نوین کدگذاری هدف‌محور مرتب‌شده (Ordered Target Encoding) را به کار می‌گیرد. این روش مقدار دسته‌ای را با میانگینی از مقادیر هدف (قیمت گوشی) بدون ایجاد نشت داده (Data Leakage) جایگزین می‌کند. در این فرمولاسیون ریاضی، مقدار کدگذاری‌شده $\hat{x}_{i}^{k}$ برای متغیر دسته‌ای $x_{i}^{k}$ در نمونه $i$ ام به صورت زیر محاسبه می‌شود:
+						</p>
+						
+						<div class="my-6 text-center text-white font-mono text-base" dir="ltr">
+							$$\hat{x}_{i}^{k} = \frac{\sum_{j=1}^{p-1} [x_{j}^{k} = x_{i}^{k}] \cdot y_j + s \cdot p}{\sum_{j=1}^{p-1} [x_{j}^{k} = x_{i}^{k}] + s}$$
+						</div>
+						
+						<p class="mb-4">
+							در این فرمول ریاضی، $y_j$ ارزش قیمتی هدف بوده، $s$ به عنوان پارامتر هموارسازی (Smoothing) برای جلوگیری از بیش‌برازش روی دسته‌های با تعداد کم به کار می‌رود و $p$ مقدار پیش‌فرض میانگین است. از سوی دیگر، فرآیند یادگیری گروهی در بوستینگ تدریجی با فرمول به‌روزرسانی زیر، درختان ضعیف را پی‌درپی با یکدیگر ترکیب کرده تا خطای پیش‌بینی به حداقل برسد:
+						</p>
+						
+						<div class="my-6 text-center text-white font-mono text-base" dir="ltr">
+							$$F_t(x) = F_{t-1}(x) + \gamma_t h_t(x)$$
+						</div>
+						
+						<p>
+							در این رابطه، $F_t(x)$ مدل ترکیبی به روز شده در گام $t$، $h_t(x)$ درخت تصمیم‌گیری ضعیفِ جدید و $\gamma_t$ نرخ یادگیری (Learning Rate) تخصیص یافته به آن درخت است. این یکپارچگی پیشرفته ریاضی و مهندسی داده در خط لوله موبینو، تضمین‌کننده پایداری، سرعت و دقت علمی بالا برای ارائه پروژه به جامعه علمی دانشگاهی است.
+						</p>
+				</div>
+            </section>
+
+            <section id="future-work" class="doc-section mb-16">
+                <h2>۸. جمع‌بندی و توسعه‌های آینده</h2>
+				<div class="space-y-6 text-gray-300 leading-relaxed">
+						
+						<p>
+							پلتفرم هوشمند <strong>موبینو</strong> با موفقیت توانست چالش پیچیده ارزیابی سخت‌افزاری و ارزش‌گذاری اقتصادی تلفن‌های همراه را در بازار پویا و پرنوسان ایران حل کند. این سامانه با تلفیق ابزارهای مدرن مهندسی داده مانند <span class="text-white font-semibold">Playwright</span>، مدل‌های رگرسیون پیشرفته <span class="text-cyan-400 font-mono">CatBoost</span> و قدرت تحلیل کیفی مدل هوش مصنوعی <span class="text-white font-semibold">Gemini AI</span>، یک خط لوله (Pipeline) خودکار و ناهمگام پدید آورده است. موبینو فراتر از یک موتور جستجوی ساده تجارت الکترونیک (E-commerce)، به عنوان یک کارشناس خبره و بی‌طرف عمل می‌کند که داده‌های خام سخت‌افزاری را به بینش‌های ارزشمند مالی و کاربردی برای خریداران نهایی تبدیل می‌سازد.
+						</p>
+
+						<h3 class="text-lg font-semibold text-white mt-6">الف) دستاوردهای کلیدی پروژه</h3>
+						<ul class="list-disc list-inside space-y-2 pr-4 text-sm">
+							<li><strong class="text-white">بومی‌سازی فرآیند ارزش‌گذاری:</strong> اتصال هوشمندانه نرخ دلار آزاد به مدل قیمت‌گذاری رگرسیونی، جهت خنثی‌سازی اثر تورم لحظه‌ای در دیتای تاریخی.</li>
+							<li><strong class="text-white">کاهش چشمگیر تاخیر (Latency):</strong> تجمیع درخواست‌های ارسالی به مدل LLM و استفاده از قابلیت پاسخ ساختاریافته (Structured JSON Schema) جهت افزایش پایداری بک‌اند.</li>
+							<li><strong class="text-white">معماری ماژولار توزیع‌شده:</strong> تفکیک مدل‌های امتیازدهی سخت‌افزاری به ۶ هسته مجزا که امکان توسعه و به‌روزرسانی مستقل هر بخش را فراهم می‌کند.</li>
+						</ul>
+
+						<h3 class="text-lg font-semibold text-white mt-6">ب) نقشه راه و توسعه‌های آینده (Future Works)</h3>
+						<p>
+							برای ارتقای این سیستم در فازهای بعدی و تبدیل آن به یک محصول صنعتی و پژوهشی جامع‌تر، اهداف زیر به عنوان نقشه راه توسعه در نظر گرفته شده است:
+						</p>
+
+						<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+							<!-- آیتم اول توسعه -->
+							<div class="bg-white/5 border border-white/10 rounded-xl p-5">
+								<h4 class="text-cyan-400 font-semibold text-sm mb-2 flex items-center">
+									<span class="w-2 h-2 rounded-full bg-cyan-400 mr-2"></span>
+									۱. توسعه به سایر دسته‌های کالایی
+								</h4>
+								<p class="text-xs text-gray-400 leading-relaxed">
+									گسترش مدل‌های Scraping و معماری یادگیری ماشین سیستم برای تحلیل و ارزش‌گذاری سایر کالاهای دیجیتال نظیر لپ‌تاپ، تبلت و ساعت‌های هوشمند با مهندسی ویژگی‌های (Feature Engineering) اختصاصی هر رده.
+								</p>
+							</div>
+
+							<!-- آیتم دوم توسعه -->
+							<div class="bg-white/5 border border-white/10 rounded-xl p-5">
+								<h4 class="text-purple-400 font-semibold text-sm mb-2 flex items-center">
+									<span class="w-2 h-2 rounded-full bg-purple-400 mr-2"></span>
+									۲. بومی‌سازی عمیق‌تر مدل زبانی (LLM)
+								</h4>
+								<p class="text-xs text-gray-400 leading-relaxed">
+									جایگزینی یا Fine-tune کردن مدل‌های زبانی روی کامنت‌ها و اصطلاحات عامیانه کاربران ایرانی (مانند زبان غیررسمی نسل جدید در شبکه‌های اجتماعی) جهت درک دقیق‌تر حس خریداران (Sentiment Analysis).
+								</p>
+							</div>
+
+							<!-- آیتم سوم توسعه -->
+							<div class="bg-white/5 border border-white/10 rounded-xl p-5">
+								<h4 class="text-amber-400 font-semibold text-sm mb-2 flex items-center">
+									<span class="w-2 h-2 rounded-full bg-amber-400 mr-2"></span>
+									۳. عرضه اپلیکیشن موبایل (Cross-Platform)
+								</h4>
+								<p class="text-xs text-gray-400 leading-relaxed">
+									طراحی و پیاده‌سازی نسخه موبایل این پلتفرم با استفاده از فریم‌ورک‌های بومی مانند React Native جهت تسهیل دسترسی خریداران در هنگام خرید حضوری در بازارهای فیزیکی.
+								</p>
+							</div>
+
+							<!-- آیتم چهارم توسعه -->
+							<div class="bg-white/5 border border-white/10 rounded-xl p-5">
+								<h4 class="text-green-400 font-semibold text-sm mb-2 flex items-center">
+									<span class="w-2 h-2 rounded-full bg-green-400 mr-2"></span>
+									۴. مدیریت خودکار انحراف داده (Data Drift)
+								</h4>
+								<p class="text-xs text-gray-400 leading-relaxed">
+									راه‌اندازی یک سیستم مانیتورینگ خودکار برای تشخیص زمان قدیمی شدن دیتای آموزش مدل قیمت‌گذاری (Data Drift) و بازآموزی دوره‌ای و اتوماتیک مدل‌ها بر اساس قیمت‌های جدید بازار.
+								</p>
+							</div>
+						</div>
+
+						<blockquote class="border-r-4 border-cyan-500 bg-cyan-500/5 p-4 rounded-l-xl text-sm italic my-4 text-gray-300">
+							"پلتفرم موبینو نشان‌دهنده پتانسیل بالای تلفیق سیستم‌های هوشمند استخراج داده و الگوریتم‌های پیشرفته یادگیری ماشین در راستای شفاف‌سازی بازارهای مالی و کمک به تصمیم‌گیری بهینه مصرف‌کنندگان است."
+						</blockquote>
+						
+					</div>
+            </section>
+
+        </main>
+    </div>
+
+</body>
+</html>

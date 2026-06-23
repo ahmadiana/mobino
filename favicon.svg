@@ -1,0 +1,20 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient: bg-gradient-to-br from-primary to-secondary -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <!-- NOTE: Replace these hex codes with your exact primary/secondary brand colors -->
+      <stop offset="0%" stop-color="#3b82f6" /> 
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background: w-8 h-8 (32x32px), rounded-lg (8px radius) -->
+  <rect width="32" height="32" rx="8" fill="url(#bg-grad)" />
+  
+  <!-- Icon: Centered inside the 32x32 box -->
+  <g transform="translate(4, 4)">
+    <rect x="8" y="8" width="8" height="8" rx="1.5" stroke="#ffffff" stroke-width="1.8" fill="none"/>
+    <circle cx="12" cy="12" r="1.4" fill="#ffffff" stroke="none"/>
+    <path stroke="#ffffff" stroke-linecap="round" stroke-width="1.8" d="M12 2v4M12 18v4M2 12h4M18 12h4M5.5 5.5l2 2M16.5 5.5l-2 2M5.5 18.5l2-2M16.5 18.5l-2-2"/>
+  </g>
+</svg>
