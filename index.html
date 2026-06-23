@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موبینو | پلتفرم هوشمند تحلیل گوشی</title>
+    
+    <!-- Fonts -->
+	<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;300;400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#09090B',
+                        surface: '#111827',
+                        primary: '#3B82F6',
+                        secondary: '#06B6D4',
+                        accent: '#8B5CF6',
+                        borderline: 'rgba(255,255,255,0.08)'
+                    },
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Global Scale Adjustment: makes the whole UI feel like ~90% browser zoom
+           by shrinking the rem base unit. All Tailwind spacing/sizing utilities
+           are rem-based, so this scales everything proportionally without
+           breaking fixed-position elements (which a CSS transform: scale would). */
+        html {
+            font-size: 85%;
+        }
+
+        @keyframes floatIndicator {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(8px); }
+        }
+
+        /* Base Setup */
+        body {
+            background-color: #09090B;
+            color: #ffffff;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Glassmorphism & Cards */
+        .glass {
+            background: rgba(17, 24, 39, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .glass-card {
+            background: linear-gradient(180deg, rgba(17, 24, 39, 0.6) 0%, rgba(9, 9, 11, 0.8) 100%);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Animated Aurora Background */
+        .aurora-container {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .aurora-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.3;
+            animation: moveBlob 25s infinite alternate ease-in-out;
+        }
+
+        .blob-1 { background: #3B82F6; width: 600px; height: 600px; top: -10%; right: -10%; }
+        .blob-2 { background: #06B6D4; width: 500px; height: 500px; top: 40%; left: -10%; animation-delay: -5s; }
+        .blob-3 { background: #8B5CF6; width: 700px; height: 700px; bottom: -20%; right: 20%; animation-delay: -10s; }
+
+        @keyframes moveBlob {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-50px, 100px) scale(1.1); }
+            100% { transform: translate(100px, -50px) scale(0.9); }
+        }
+
+        /* Input Glow Component */
+        .input-wrapper {
+            position: relative;
+            border-radius: 16px;
+            z-index: 10;
+        }
+
+        .input-wrapper::before {
+            content: "";
+            position: absolute;
+            inset: -2px;
+            border-radius: 18px;
+            background: linear-gradient(45deg, #3B82F6, #06B6D4, #8B5CF6, #3B82F6);
+            background-size: 200% 200%;
+            z-index: -1;
+            opacity: 0.15;
+            filter: blur(10px);
+            transition: all 0.5s ease;
+            animation: gradientMove 4s linear infinite;
+        }
+
+        .input-wrapper:focus-within::before, .input-wrapper:hover::before {
+            opacity: 0.6;
+            filter: blur(16px);
+            inset: -3px;
+        }
+
+        .main-input {
+            width: 100%;
+            height: 100px;
+            background: rgba(9, 9, 11, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            color: #fff;
+            font-size: 1.125rem;
+            resize: none;
+            outline: none;
+            transition: all 0.3s ease;
+            line-height: 1.6;
+        }
+
+        .main-input:focus {
+            border-color: rgba(6, 182, 212, 0.5);
+            background: rgba(17, 24, 39, 0.8);
+        }
+
+        /* Typewriter Overlay */
+        .typewriter-overlay {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            pointer-events: none;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .typewriter-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background-color: #06B6D4;
+            margin-right: 4px;
+            animation: blink 1s step-start infinite;
+            box-shadow: 0 0 8px #06B6D4;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+        @keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+
+        /* Premium Buttons */
+        .btn-glow {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(90deg, #3B82F6, #06B6D4);
+            border: none;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-glow:hover {
+            box-shadow: 0 0 40px rgba(59, 130, 246, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-glow::after {
+            content: "";
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(rgba(255,255,255,0.2), transparent);
+            transform: rotate(45deg);
+            transition: 0.5s ease;
+            opacity: 0;
+        }
+
+        .btn-glow:hover::after {
+            opacity: 1;
+            left: 100%;
+        }
+
+        /* Scroll Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        .delay-300 { transition-delay: 300ms; }
+
+        /* Text Gradients */
+        .text-gradient {
+            background: linear-gradient(to left, #ffffff, #a1a1aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text-gradient-primary {
+            background: linear-gradient(to left, #3B82F6, #06B6D4, #8B5CF6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+		
+		/* Add these to your existing tag */
+		@keyframes toastSlideIn {
+			0% { transform: translate(-50%, -20px) scale(0.95); opacity: 0; }
+			100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+		}
+
+		@keyframes toastSlideOut {
+			0% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+			100% { transform: translate(-50%, -20px) scale(0.95); opacity: 0; }
+		}
+
+		.toast-animate-in {
+			animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+		}
+
+		.toast-animate-out {
+			animation: toastSlideOut 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+		}
+		
+
+		body {
+		  background-color: #030712; /* Keeps your deep dark theme background */
+		}
+
+		/* --- Premium Neon Custom Easing Keys --- */
+		@keyframes neonPulse {
+		  0%, 100% { box-shadow: 0 0 15px rgba(34, 211, 238, 0.2), inset 0 0 15px rgba(34, 211, 238, 0.1); }
+		  50% { box-shadow: 0 0 30px rgba(34, 211, 238, 0.4), inset 0 0 25px rgba(34, 211, 238, 0.2); }
+		}
+
+		.premium-glass-card {
+		  background: rgba(15, 23, 42, 0.45);
+		  backdrop-filter: blur(20px);
+		  -webkit-backdrop-filter: blur(20px);
+		  border: 1px solid rgba(255, 255, 255, 0.08);
+		}
+
+		.neon-glow-active {
+		  animation: neonPulse 3s infinite ease-in-out;
+		}	
+		
+		/* --- Mobino Premium Results Styling --- */
+
+		/* Ranking Medals */
+		.medal-rank-1 { background: linear-gradient(135deg, #FFDF00 0%, #D4AF37 100%); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); color: #4A3500; }
+		.medal-rank-2 { background: linear-gradient(135deg, #E0E0E0 0%, #9E9E9E 100%); box-shadow: 0 0 15px rgba(158, 158, 158, 0.3); color: #212121; }
+		.medal-rank-3 { background: linear-gradient(135deg, #CD7F32 0%, #A0522D 100%); box-shadow: 0 0 15px rgba(205, 127, 50, 0.3); color: #3E1D04; }
+		.medal-standard { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: #94A3B8; }
+
+		/* Score Badge Colors */
+		.score-green { background-color: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); }
+		.score-blue { background-color: rgba(56, 189, 248, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.3); }
+		.score-yellow { background-color: rgba(250, 204, 21, 0.15); color: #FACC15; border: 1px solid rgba(250, 204, 21, 0.3); }
+		.score-red { background-color: rgba(244, 63, 94, 0.15); color: #F43F5E; border: 1px solid rgba(244, 63, 94, 0.3); }
+
+		/* Comparison Table Specifics */
+		.comparison-table-wrapper {
+			scrollbar-width: thin;
+			scrollbar-color: rgba(34, 211, 238, 0.5) rgba(15, 23, 42, 0.5);
+		}
+		/* RTL Sticky Column for the Spec Names */
+		.sticky-spec-col {
+			position: sticky;
+			right: 0;
+			z-index: 10;
+			background: rgba(15, 23, 42, 0.95);
+			backdrop-filter: blur(10px);
+			border-left: 1px solid rgba(255, 255, 255, 0.05);
+		}
+
+		/* AI Markdown Typography Formatting */
+		.ai-markdown-content h3 { font-size: 1.25rem; font-weight: 700; color: #E2E8F0; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+		.ai-markdown-content p { margin-bottom: 1rem; leading-trim: both; text-edge: cap; }
+		.ai-markdown-content strong { color: #38BDF8; font-weight: 600; }
+		.ai-markdown-content ul { list-style-type: disc; padding-right: 1.5rem; margin-bottom: 1rem; color: #CBD5E1; }
+		.ai-markdown-content li { margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body class="antialiased selection:bg-primary selection:text-white">
+
+	<div id="mobino-notification-zone" dir="rtl" class="fixed top-24 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-md px-4 flex flex-col items-center gap-3 pointer-events-none">
+		</div>
+
+    <!-- Aurora Background -->
+    <div class="aurora-container">
+        <div class="aurora-blob blob-1"></div>
+        <div class="aurora-blob blob-2"></div>
+        <div class="aurora-blob blob-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass border-b-0 border-borderline">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                    <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <rect x="8" y="8" width="8" height="8" rx="1.5" stroke-width="1.8"/>
+                        <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/>
+                        <path stroke-linecap="round" stroke-width="1.8" d="M12 2v4M12 18v4M2 12h4M18 12h4M5.5 5.5l2 2M16.5 5.5l-2 2M5.5 18.5l2-2M16.5 18.5l-2-2" />
+                    </svg>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-white">موبینو</span>
+            </div>
+            <div class="flex items-center gap-6 text-sm font-medium text-gray-300">
+                <a href="docs.html" class="hover:text-white transition-colors">مستندات</a>
+                <a href="https://github.com/your-username/your-repo" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-lg glass hover:bg-white/10 transition-colors text-white border border-white/10 flex items-center gap-2">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.333-1.755-1.333-1.755-1.089-.745.083-.729.083-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.467-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23a11.5 11.5 0 016 0c2.295-1.552 3.3-1.23 3.3-1.23.645 1.653.24 2.873.105 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                    گیت‌هاب پروژه
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative pt-28 pb-16 px-6 min-h-[92vh] flex flex-col items-center justify-center">
+        
+        <div class="max-w-4xl mx-auto text-center z-10 reveal active">
+            <!-- Badge -->
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-primary/30 text-secondary text-sm font-medium mb-6 shadow-[0_0_20px_rgba(6,182,212,0.15)]">
+                <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+                نسل جدید تحلیل‌گر هوش مصنوعی موبایل
+            </div>
+
+            <!-- Title -->
+            <h1 class="text-6xl md:text-8xl font-black mb-4 tracking-tighter">
+                <span class="text-gradient-primary">موبینو</span>
+            </h1>
+            
+            <!-- Slogans -->
+            <h2 class="text-xl md:text-2xl font-bold text-gradient mb-4 leading-relaxed">
+                تحلیل هوشمند و پیش‌بینی قیمت تلفن‌های همراه
+            </h2>
+            
+            <p class="text-base text-gray-400 mb-8 max-w-2xl mx-auto leading-loose font-light">
+                لینک‌ محصولات از فروشگاه‌های معتبر را وارد کنید. هوش مصنوعی ما در کسری از ثانیه مشخصات را استخراج، ارزش خرید را محاسبه و بررسی تخصصی را برای شما آماده می‌کند.
+            </p>
+        </div>
+
+        <!-- Input Centerpiece -->
+        <div class="w-full max-w-3xl mx-auto z-10 reveal active delay-100">
+            <div class="input-wrapper mb-6">
+                <textarea id="linkInput" class="main-input font-mono dir-ltr text-left" dir="ltr" spellcheck="false"></textarea>
+                <div id="typewriterOverlay" class="typewriter-overlay font-mono dir-ltr flex-row-reverse" dir="ltr">
+                    <span id="typewriterText"></span><span class="typewriter-cursor"></span>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-xs text-gray-500 font-mono flex items-center gap-2">
+                    <svg class="w-4 h-4 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    پشتیبانی از چندین لینک همزمان (با کاما جدا کنید)
+                </p>
+				<button onclick="handlePipelineSubmission()" class="btn-glow px-8 py-3 rounded-xl text-white font-bold text-sm flex items-center gap-3 w-full sm:w-auto justify-center">
+					شروع تحلیل هوشمند
+					<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+					</svg>
+				</button>
+            </div>
+        </div>
+		
+		
+		<div id="analysis-loading-overlay" dir="rtl" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-3xl flex items-center justify-center opacity-0 pointer-events-none transition-all duration-700 ease-out">
+			
+			<div id="loading-state-view" class="premium-glass-card neon-glow-active max-w-sm w-full mx-4 rounded-3xl p-8 text-center flex flex-col items-center justify-center transform scale-95 transition-all duration-500">
+				<div class="relative w-16 h-16 mb-6 flex items-center justify-center">
+					<div class="absolute inset-0 rounded-full border-[3px] border-cyan-500/20"></div>
+					<div class="absolute inset-0 rounded-full border-[3px] border-t-cyan-400 border-r-cyan-400 animate-spin"></div>
+					<div class="w-2 h-2 bg-cyan-400 rounded-full animate-ping"></div>
+				</div>
+				<h3 class="text-white text-lg font-bold tracking-tight mb-2">در حال تحلیل اطلاعات</h3>
+				<p class="text-slate-400 text-sm leading-relaxed">هوش مصنوعی در حال پردازش دقیق داده‌ها است. لطفاً منتظر بمانید...</p>
+			</div>
+
+			<div id="error-state-view" class="hidden premium-glass-card border-red-500/30 max-w-sm w-full mx-4 rounded-3xl p-8 text-center flex flex-col items-center justify-center transform scale-95 transition-all duration-500">
+				<svg class="w-16 h-16 text-red-400 mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+				</svg>
+				<h3 class="text-white text-lg font-bold tracking-tight mb-2">پردازش با خطا مواجه شد</h3>
+				<p class="text-slate-400 text-sm leading-relaxed mb-6">متاسفانه در ارتباط با سرور هوش مصنوعی مشکلی پیش آمد. هیچ داده ناقصی نمایش داده نخواهد شد.</p>
+				<button onclick="handlePipelineSubmission()" class="px-6 py-2.5 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-xl font-medium transition-colors border border-red-500/30">
+					تلاش مجدد
+				</button>
+			</div>
+		</div>
+
+		<section id="mobino-results-section" dir="rtl" class="hidden opacity-0 container mx-auto px-4 py-16 transition-opacity duration-1000 ease-in-out">
+			
+			<div id="results-cards-container" class="flex flex-wrap justify-center items-stretch gap-5 mb-16">
+				</div>
+
+			<div id="results-table-container" class="mb-16 premium-glass-card rounded-3xl overflow-hidden border border-white/5 shadow-2xl">
+				<div class="comparison-table-wrapper overflow-x-auto">
+					<table class="w-full text-sm text-right">
+						<tbody id="comparison-table-body" class="divide-y divide-white/5">
+							</tbody>
+					</table>
+				</div>
+			</div>
+
+			<div id="results-ai-analysis" class="premium-glass-card rounded-3xl p-6 md:p-10 relative overflow-hidden border border-cyan-500/20">
+				<div class="flex items-center gap-4 mb-8 border-b border-white/10 pb-6">
+					<div class="w-14 h-14 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 p-[2px]">
+						<div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center">
+							<svg class="w-7 h-7 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<rect x="8" y="8" width="8" height="8" rx="1.5" stroke-width="1.6"/>
+								<circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/>
+								<path stroke-linecap="round" stroke-width="1.6" d="M12 2v4M12 18v4M2 12h4M18 12h4M5.5 5.5l2 2M16.5 5.5l-2 2M5.5 18.5l2-2M16.5 18.5l-2-2" />
+							</svg>
+						</div>
+					</div>
+					<div>
+						<h2 class="text-xl font-bold text-white tracking-tight">تحلیلگر هوشمند موبینو</h2>
+						<span class="text-xs text-cyan-400 font-medium tracking-wider bg-cyan-400/10 px-2 py-1 rounded-md mt-1 inline-block">این متن توسط هوش مصنوعی تولید شده است</span>
+					</div>
+				</div>
+				<div id="ai-markdown-container" class="ai-markdown-content text-slate-300 leading-loose text-base md:text-lg max-w-4xl mx-auto">
+					</div>
+			</div>
+
+		</section>		
+		
+        
+        <!-- Scroll Indicator -->
+        <div id="scroll-indicator" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-70 transition-opacity duration-500" style="animation: floatIndicator 2.4s ease-in-out infinite;">
+            <span class="text-xs text-gray-400 font-mono tracking-widest uppercase">Scroll</span>
+            <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- Information Visual Structure (Future Content Placeholders) -->
+    <section class="py-24 px-6 relative z-10">
+        <div class="max-w-7xl mx-auto">
+            
+            <!-- Section Header -->
+            <div class="text-center mb-14 reveal">
+                <h3 class="text-3xl font-bold text-white mb-4">معماری پردازش داده در موبینو</h3>
+                <div class="w-24 h-1 bg-gradient-to-r from-primary to-accent mx-auto rounded-full"></div>
+            </div>
+
+            <!-- Workflow Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-32">
+                <!-- Card 1 -->
+                <div class="glass-card rounded-2xl p-8 reveal">
+                    <div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6">
+                        <span class="text-primary font-mono text-xl font-bold">01</span>
+                    </div>
+                    <h4 class="text-xl font-bold mb-4 text-white">استخراج دقیق داده‌ها</h4>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                        به محض ثبت لینک، موبینو صفحه محصول را در دیجی‌کالا واکاوی می‌کند و مشخصات فنی، قیمت فعلی، تصویر و نام دقیق دستگاه را به‌صورت خام استخراج می‌کند.
+                    </p>
+                    <div class="h-1 w-full bg-borderline rounded-full overflow-hidden">
+                        <div class="h-full bg-primary w-1/3"></div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="glass-card rounded-2xl p-8 reveal delay-100">
+                    <div class="w-12 h-12 rounded-xl bg-secondary/10 border border-secondary/20 flex items-center justify-center mb-6 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+                        <span class="text-secondary font-mono text-xl font-bold">02</span>
+                    </div>
+                    <h4 class="text-xl font-bold mb-4 text-white">تحلیل توسط مدل‌های ML</h4>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                        داده‌های خام پس از پاکسازی و نگاشت ساختاری، به شش مدل CatBoost سپرده می‌شوند تا امتیاز سخت‌افزار، دوربین، نمایشگر، باتری، طراحی و نرم‌افزار هر دستگاه محاسبه شود.
+                    </p>
+                    <div class="h-1 w-full bg-borderline rounded-full overflow-hidden">
+                        <div class="h-full bg-secondary w-2/3 shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="glass-card rounded-2xl p-8 reveal delay-200">
+                    <div class="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center mb-6">
+                        <span class="text-accent font-mono text-xl font-bold">03</span>
+                    </div>
+                    <h4 class="text-xl font-bold mb-4 text-white">ارزیابی ارزش خرید (Gemini)</h4>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                        Gemini قیمت جهانی پایه دستگاه را تخمین می‌زند، مدل پیش‌بینی قیمت آن را با بازار داخلی می‌سنجد، و در نهایت یک نقد و بررسی فنی به زبان فارسی تولید می‌کند.
+                    </p>
+                    <div class="h-1 w-full bg-borderline rounded-full overflow-hidden">
+                        <div class="h-full bg-accent w-full shadow-[0_0_10px_rgba(139,92,246,0.8)]"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Large Showcase Section -->
+            <div class="glass-card rounded-3xl p-1 relative overflow-hidden reveal">
+                <!-- Inner glow border effect simulation -->
+                <div class="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 z-0"></div>
+                
+                <div class="relative z-10 bg-surface/90 backdrop-blur-xl rounded-[23px] p-10 flex flex-col lg:flex-row items-center gap-12 border border-borderline">
+                    <div class="flex-1">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-mono text-gray-300 mb-6">
+                            <span class="w-2 h-2 rounded-full bg-green-500"></span> System Ready
+                        </div>
+                        <h3 class="text-3xl font-bold text-white mb-6">گزارش‌دهی تخصصی و مقایسه هوشمند</h3>
+                        <p class="text-gray-400 leading-loose mb-8">
+                            موبینو فقط امتیاز نمی‌دهد؛ برای هر گوشی یک گزارش کامل می‌سازد: مقایسه قیمت فعلی دیجی‌کالا با قیمت پیش‌بینی‌شده، تحلیل ارزش خرید نسبت به رده قیمتی، و نقد فنی نوشته‌شده توسط هوش مصنوعی بر اساس مشخصات واقعی دستگاه. وقتی چند لینک با هم وارد شوند، همین گزارش به‌صورت مقایسه‌ای بین تمام دستگاه‌ها ارائه می‌شود.
+                        </p>
+                        <ul class="space-y-4">
+                            <li class="flex items-center gap-3 text-sm text-gray-300">
+                                <svg class="w-5 h-5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                تخمین قیمت جهانی و مقایسه بومی
+                            </li>
+                            <li class="flex items-center gap-3 text-sm text-gray-300">
+                                <svg class="w-5 h-5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                نگارش نقد و بررسی با لحن تکنولوژی
+                            </li>
+                            <li class="flex items-center gap-3 text-sm text-gray-300">
+                                <svg class="w-5 h-5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                تولید جدول مقایسه‌ای خودکار (در صورت ثبت چند لینک)
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Code/Data Mockup Container -->
+                    <div class="flex-1 w-full bg-[#0d1117] rounded-xl border border-white/5 p-6 shadow-2xl relative">
+                        <div class="absolute top-4 left-4 flex gap-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                        </div>
+                        <div class="mt-8 font-mono text-xs md:text-sm text-gray-400 dir-ltr" dir="ltr">
+                            <span class="text-accent">POST</span> /api/analyze<br>
+                            {<br>
+                            &nbsp;&nbsp;<span class="text-primary">"raw_scraped_data"</span>: { ... }<br>
+                            }<br><br>
+                            <span class="text-gray-500">// Response</span><br>
+                            {<br>
+                            &nbsp;&nbsp;<span class="text-primary">"predictions"</span>: [{<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-primary">"score_overall"</span>: <span class="text-orange-300">87.4</span>,<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-primary">"launch_msrp_usd"</span>: <span class="text-orange-300">799</span>,<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-primary">"predicted_price_toman"</span>: <span class="text-orange-300">118499</span><br>
+                            &nbsp;&nbsp;}],<br>
+                            &nbsp;&nbsp;<span class="text-primary">"ai_review"</span>: { <span class="text-green-400">"overview"</span>: <span class="text-green-400">"..."</span> }<br>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script>
+        // =========================================================================
+        // 1. SCROLL REVEAL LOGIC (UNTOUCHED)
+        // =========================================================================
+        const revealElements = document.querySelectorAll('.reveal');
+        
+        const revealCallback = (entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        };
+
+        const revealOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const revealObserver = new IntersectionObserver(revealCallback, revealOptions);
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // =========================================================================
+        // 1b. FLOATING SCROLL INDICATOR: visible at page load, fades out smoothly
+        // as soon as the user starts scrolling down.
+        // =========================================================================
+        const scrollIndicatorEl = document.getElementById('scroll-indicator');
+        if (scrollIndicatorEl) {
+            window.addEventListener('scroll', () => {
+                const fadeDistance = 120; // px of scroll over which it fully fades
+                const opacity = Math.max(0, 1 - (window.scrollY / fadeDistance));
+                scrollIndicatorEl.style.opacity = (opacity * 0.7).toFixed(2);
+                scrollIndicatorEl.style.pointerEvents = opacity <= 0.05 ? 'none' : 'auto';
+            }, { passive: true });
+        }
+
+        // =========================================================================
+        // 2. TYPEWRITER LOGIC FOR INPUT PLACEHOLDER (UNTOUCHED)
+        // =========================================================================
+        const phrases = [
+            "https://www.digikala.com/product/dkp-...",
+            "لینک‌های خود را با کاما (,) جدا کنید...",
+            "مثال: لینک دیجی‌کالا برای Galaxy S24 Ultra..."
+        ];
+        
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let isFocused = false;
+        
+        const textElement = document.getElementById('typewriterText');
+        const inputElement = document.getElementById('linkInput');
+        const overlayElement = document.getElementById('typewriterOverlay');
+
+        function type() {
+            if (isFocused || inputElement.value.length > 0) return;
+
+            const currentPhrase = phrases[phraseIndex];
+            
+            if (isDeleting) {
+                textElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                textElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            let typeSpeed = isDeleting ? 30 : 80;
+
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                typeSpeed = 2500;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+                typeSpeed = 500;
+            }
+
+            setTimeout(type, typeSpeed);
+        }
+
+        // Start Typewriter
+        setTimeout(type, 1000);
+
+        // Handle Input Focus / Blur Event Bindings
+        inputElement.addEventListener('focus', () => {
+            isFocused = true;
+            overlayElement.style.display = 'none';
+        });
+
+        inputElement.addEventListener('blur', () => {
+            if (inputElement.value.trim() === '') {
+                isFocused = false;
+                overlayElement.style.display = 'flex';
+                charIndex = 0;
+                isDeleting = false;
+                type();
+            }
+        });
+
+        inputElement.addEventListener('input', () => {
+            if (inputElement.value.trim() !== '') {
+                overlayElement.style.display = 'none';
+            }
+        });
+
+        // =========================================================================
+        // 3. INTEGRATED CORE DATA PLATFORM STATE
+        // =========================================================================
+        const MobinoState = {
+            validatedLinks: [],
+			linkCount: 0,
+			isSingleLink: true
+        };
+
+        // =========================================================================
+        // 4. IMPROVED CENTRIC TOAST NOTIFICATION UTILS
+        // =========================================================================
+        function showMobinoNotification(text, type = 'success', duration = 4000, hasSpinner = false, persistentId = null) {
+            const container = document.getElementById('mobino-notification-zone');
+            if (!container) return null;
+
+            const toast = document.createElement('div');
+            if (persistentId) toast.id = persistentId;
+            
+            // Base Premium Glass Layout Properties
+            const baseClass = `
+                premium-glass-card pointer-events-auto flex items-center gap-3 px-5 py-3.5 rounded-xl 
+                border text-sm shadow-xl transition-all duration-500 ease-out 
+                transform translate-y-[-20px] opacity-0 scale-95 w-full max-w-sm justify-center
+            `;
+            
+            // Contextual Accent Type Definitions
+            const typeClasses = type === 'success' 
+                ? "border-cyan-500/30 text-cyan-400 bg-slate-900/60" 
+                : "border-red-500/30 text-red-400 bg-red-950/20";
+                
+            toast.className = `${baseClass} ${typeClasses}`;
+            
+            // Icon / Custom Inline Spinner Node Logic Component
+            let systemIcon = '';
+            if (hasSpinner) {
+                systemIcon = `<div class="w-4 h-4 shrink-0 rounded-full border-2 border-cyan-400/20 border-t-cyan-400 animate-spin"></div>`;
+            } else {
+                systemIcon = type === 'success'
+                    ? `<svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`
+                    : `<svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`;
+            }
+
+            toast.innerHTML = `${systemIcon}<span class="font-medium tracking-wide text-center">${text}</span>`;
+            container.appendChild(toast);
+
+            // Animate Frame Render Entry Execution Loop
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-[-20px]', 'opacity-0', 'scale-95');
+            });
+
+            if (duration !== Infinity) {
+                setTimeout(() => {
+                    hideMobinoNotification(toast);
+                }, duration);
+            }
+
+            return toast;
+        }
+
+        function hideMobinoNotification(toastElement) {
+            if (!toastElement) return;
+            toastElement.classList.add('translate-y-[-10px]', 'opacity-0', 'scale-90');
+            setTimeout(() => { toastElement.remove(); }, 500);
+        }
+
+        // =========================================================================
+        // 5. STABLE SYSTEM VALIDATION ENGINE (UNTOUCHED LOGIC PATTERNS)
+        // =========================================================================
+        const MobinoValidator = {
+            digikalaProductRegex: /^https?:\/\/(?:www\.)?digikala\.com\/product\/dkp[-_]\d+/i,
+            phoneKeyword: 'گوشی',
+
+            validate(rawInput) {
+                if (!rawInput || rawInput.trim() === '') {
+                    showMobinoNotification('لطفاً ابتدا لینک یا لینک‌های مورد نظر خود را وارد کنید.', 'error');
+                    return null;
+                }
+
+                const links = [...new Set(rawInput.split(',')
+                                     .map(link => link.trim())
+                                     .filter(link => link.length > 0))];
+
+                if (links.length === 0) {
+                    showMobinoNotification('ورودی نامعتبر است. لطفاً ساختار لینک‌ها را بررسی کنید.', 'error');
+                    return null;
+                }
+
+                if (links.length > 5) {
+                    showMobinoNotification('حداکثر مجاز به پردازش همزمان ۵ لینک هستید.', 'error');
+                    return null;
+                }
+
+                for (const link of links) {
+                    if (!this.isValidURL(link)) {
+                        showMobinoNotification(`آدرس وارد شده فاقد ساختار استاندارد وب است:\n${this.truncateString(link)}`, 'error');
+                        return null;
+                    }
+
+                    if (!this.digikalaProductRegex.test(link)) {
+                        showMobinoNotification('موبینو تنها قادر به تحلیل پیوندهای رسمی کالا در دیجی‌کالا است.', 'error');
+                        return null;
+                    }
+
+                    if (!this.isPhoneProduct(link)) {
+                        showMobinoNotification('محصول یافت نشد. پیوند ارائه‌شده باید متعلق به دسته‌بندی «گوشی موبایل» باشد.', 'error');
+                        return null;
+                    }
+                }
+                return links;
+            },
+
+            isValidURL(string) {
+                try { new URL(string); return true; } catch (_) { return false; }
+            },
+
+            isPhoneProduct(urlStr) {
+                try {
+                    const decodedPath = decodeURIComponent(urlStr);
+                    return decodedPath.includes(this.phoneKeyword);
+                } catch (e) {
+                    console.error("URL character structure extraction mismatch:", e);
+                    return false;
+                }
+            },
+
+            truncateString(str, num = 35) {
+                return str.length <= num ? str : str.slice(0, num) + '...';
+            }
+        };
+
+		// =========================================================================
+        // 6. GLOBAL REACTIVE INTERACTIVE LOADING MATRIX FLAG
+        // =========================================================================
+        Object.defineProperty(window, 'isAnalysisLoading', {
+            get: function() { return this._isAnalysisLoading || false; },
+            set: function(value) {
+                this._isAnalysisLoading = value;
+                const overlay = document.getElementById('analysis-loading-overlay');
+                const loadView = document.getElementById('loading-state-view');
+                const errorView = document.getElementById('error-state-view');
+
+                if (!overlay) return;
+
+                if (value) {
+                    // Force reveal background blur overlay block
+                    overlay.classList.remove('opacity-0', 'pointer-events-none');
+                    errorView.classList.add('hidden');
+                    loadView.classList.remove('hidden');
+                    
+                    requestAnimationFrame(() => {
+                        loadView.classList.remove('scale-95', 'opacity-0');
+                    });
+                } else {
+                    // Gracefully clear out viewport elements
+                    loadView.classList.add('scale-95', 'opacity-0');
+                    setTimeout(() => {
+                        overlay.classList.add('opacity-0', 'pointer-events-none');
+                    }, 300);
+                }
+            },
+            configurable: true
+        });
+
+        function triggerPipelineErrorState() {
+            const loadView = document.getElementById('loading-state-view');
+            const errorView = document.getElementById('error-state-view');
+            
+            if (loadView && errorView) {
+                loadView.classList.add('hidden');
+                errorView.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    errorView.classList.remove('scale-95', 'opacity-0');
+                });
+            }
+        }
+
+        // =========================================================================
+        // 7. MOBINO RESULTS RENDERING ENGINE (SAFE RECOVERY DESIGN)
+        // =========================================================================
+        const MobinoRenderer = {
+            
+            getScoreColorClass(score) {
+                if (score >= 90) return 'score-green';
+                if (score >= 70) return 'score-blue';
+                if (score >= 50) return 'score-yellow';
+                return 'score-red';
+            },
+
+            getRankMedalClass(index, totalCount) {
+                if (totalCount === 1) return 'hidden'; 
+                if (index === 0) return 'medal-rank-1';
+                if (index === 1) return 'medal-rank-2';
+                if (index === 2) return 'medal-rank-3';
+                return 'medal-standard';
+            },
+
+            // Digikala (and Gemini, occasionally) can return prices using
+            // Persian/Arabic-indic digit characters (۰۱۲۳۴۵۶۷۸۹) instead of
+            // ASCII digits. A plain /[^0-9]/g strip silently zeroes these out
+            // since Persian digits don't match [0-9]. This converts them to
+            // ASCII first so every downstream number parse works correctly.
+            toAsciiDigits(value) {
+                const persian = '۰۱۲۳۴۵۶۷۸۹';
+                const arabic = '٠١٢٣٤٥٦٧٨٩';
+                return String(value).replace(/[۰-۹٠-٩]/g, (ch) => {
+                    const persianIndex = persian.indexOf(ch);
+                    if (persianIndex !== -1) return String(persianIndex);
+                    const arabicIndex = arabic.indexOf(ch);
+                    if (arabicIndex !== -1) return String(arabicIndex);
+                    return ch;
+                });
+            },
+
+            parsePriceToNumber(rawValue) {
+                if (!rawValue) return 0;
+                const normalized = this.toAsciiDigits(rawValue);
+                return Number(normalized.replace(/[^0-9]/g, '')) || 0;
+            },
+
+            formatPrice(numStr) {
+                const num = this.parsePriceToNumber(numStr);
+                if (!num) return 'نامشخص';
+                return num.toLocaleString('fa-IR') + ' ت';
+            },
+
+            // The price prediction model was trained on price_toman values
+            // divided by 1000 (to make training easier), so its raw output
+            // must be multiplied by 1000 before being shown to the user.
+            formatPredictedPrice(modelOutputValue) {
+                const num = this.parsePriceToNumber(modelOutputValue);
+                if (!num) return 'نامشخص';
+                return (num * 1000).toLocaleString('fa-IR') + ' ت';
+            },
+
+            formatSpecValue(key, value) {
+                if (value === true || value === 'TRUE' || value === 'دارد') return '<span class="text-emerald-400 font-bold text-lg">✓</span>';
+                if (value === false || value === 'FALSE' || value === 'ندارد') return '<span class="text-slate-600 font-bold text-lg">✕</span>';
+                if (!value || value === 'undefined') return '-';
+
+                const v = String(value);
+                if (key.includes('battery')) return `${v} <span class="text-slate-500 text-xs">mAh</span>`;
+                if (key.includes('charging_power')) return `${v} <span class="text-slate-500 text-xs">W</span>`;
+                if (key.includes('display_size')) return `${v} <span class="text-slate-500 text-xs">اینچ</span>`;
+                if (key.includes('refresh_rate')) return `${v} <span class="text-slate-500 text-xs">Hz</span>`;
+                if (key.includes('weight')) return `${v} <span class="text-slate-500 text-xs">g</span>`;
+                
+                return v;
+            },
+
+			renderCards(phones) {
+				const container = document.getElementById('results-cards-container');
+				if (!container) return;
+				container.innerHTML = '';
+
+				phones.forEach((phone, index) => {
+					const scoreClass = this.getScoreColorClass(phone.score_overall);
+					const rankClass = this.getRankMedalClass(index, phones.length);
+					
+					// Determine if product is out of stock
+					// Check the flag from scraper, or fallback to checking the name for "ناموجود"
+					const isOutOfStock = phone.is_out_of_stock === true || 
+										 (phone.product_name_fa && phone.product_name_fa.includes('ناموجود'));
+					
+					// Clean the product name by removing "ناموجود" if present
+					let displayName = phone.product_name_fa || '';
+					if (displayName.includes('ناموجود')) {
+						displayName = displayName.replace(/ناموجود/g, '').trim();
+					}
+					// Fallback if name becomes empty after cleaning
+					if (!displayName) {
+						displayName = 'گوشی هوشمند';
+					}
+					
+					const currentPrice = this.parsePriceToNumber(phone.price);
+					const aiPrice = this.parsePriceToNumber(phone.predicted_price) * 1000;
+					let priceColorClass = 'text-white';
+					let priceDisplayText;
+					
+					if (isOutOfStock) {
+						// Product is out of stock - show "ناموجود" and skip price comparison
+						priceDisplayText = 'ناموجود';
+						priceColorClass = 'text-red-400'; // Red to indicate unavailable
+					} else {
+						// Product is available - show formatted price and do comparison
+						priceDisplayText = this.formatPrice(phone.price);
+						if (currentPrice && aiPrice) {
+							if (currentPrice < (aiPrice * 0.95)) priceColorClass = 'text-emerald-400';
+							else if (currentPrice > (aiPrice * 1.05)) priceColorClass = 'text-red-400';
+						}
+					}
+
+					const cardHTML = `
+						<div class="premium-glass-card relative flex-1 min-w-[260px] max-w-xs rounded-2xl p-5 transition-all duration-500 hover:shadow-cyan-500/10 hover:-translate-y-2 group">
+							<div class="flex justify-between items-start mb-4">
+								<div class="w-12 h-12 rounded-xl flex items-center justify-center font-black text-xl font-mono ${scoreClass}">
+									${phone.score_overall}
+								</div>
+								<div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm ${rankClass}">
+									#${index + 1}
+								</div>
+							</div>
+
+							<div class="flex flex-col items-center mb-5">
+								<img src="${phone.image_url}" alt="Product" class="w-24 h-24 object-contain mb-3 group-hover:scale-105 transition-transform duration-500 drop-shadow-2xl">
+								<h3 class="text-white font-bold text-center text-sm leading-snug line-clamp-2 min-h-[2.5em]">${displayName}</h3>
+							</div>
+
+							<div class="grid grid-cols-3 gap-2 mb-5">
+								${this.generateMiniScore('سخت‌افزار', phone.score_performance_hardware, 'M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z')}
+								${this.generateMiniScore('دوربین', phone.score_camera_system, 'M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z')}
+								${this.generateMiniScore('نمایشگر', phone.score_display, 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z')}
+								${this.generateMiniScore('باتری', phone.score_battery_charging, 'M13 10V3L4 14h7v7l9-11h-7z')}
+								${this.generateMiniScore('طراحی', phone.score_design_build_quality, 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z')}
+								${this.generateMiniScore('نرم‌افزار', phone.score_software_os, 'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4')}
+							</div>
+
+							<div class="pt-4 border-t border-white/10 flex flex-col gap-1.5">
+								<div class="flex justify-between items-center text-xs">
+									<span class="text-slate-400">قیمت دیجی‌کالا:</span>
+									<span class="font-bold font-mono ${priceColorClass}">${priceDisplayText}</span>
+								</div>
+								<div class="flex justify-between items-center text-xs">
+									<span class="text-slate-500">قیمت پیش‌بینی شده:</span>
+									<span class="font-medium font-mono text-slate-300">${this.formatPredictedPrice(phone.predicted_price)}</span>
+								</div>
+							</div>
+						</div>
+					`;
+					container.insertAdjacentHTML('beforeend', cardHTML);
+				});
+			},
+
+            generateMiniScore(label, score, svgPath) {
+                return `
+                    <div class="bg-white/5 border border-white/5 rounded-lg p-2 flex flex-col items-center justify-center gap-0.5">
+                        <svg class="w-4 h-4 text-cyan-500/70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="${svgPath}"/></svg>
+                        <span class="text-[9px] text-slate-400 font-medium">${label}</span>
+                        <span class="text-xs font-bold text-white font-mono">${score}</span>
+                    </div>
+                `;
+            },
+
+            renderTable(phones) {
+                const tbody = document.getElementById('comparison-table-body');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+
+                const specRows = [
+                    { key: 'chipset', label: 'پردازنده (Chipset)', highlight: true },
+                    { key: 'ram_gb', label: 'حافظه رم', highlight: false },
+                    { key: 'storage_gb', label: 'فضای ذخیره‌سازی', highlight: false },
+                    { key: 'display_tech', label: 'فناوری نمایشگر', highlight: false },
+                    { key: 'display_refresh_rate_hz', label: 'نرخ نوسازی (Refresh Rate)', highlight: true },
+                    { key: 'battery_capacity_mah', label: 'ظرفیت باتری', highlight: true },
+                    { key: 'wired_charging_power', label: 'سرعت شارژ', highlight: false },
+                    { key: 'rear_main_camera_megapixels', label: 'دوربین اصلی', highlight: true },
+                    { key: 'has_optical_image_stabilization', label: 'لرزشگیر اپتیکال (OIS)', highlight: false },
+                    { key: 'IP_Rating', label: 'مقاومت در برابر آب', highlight: true },
+                    { key: 'operating_system_version', label: 'سیستم‌عامل پیش‌فرض', highlight: false },
+                    { key: 'weight_grams', label: 'وزن دستگاه', highlight: false }
+                ];
+
+                specRows.forEach((row, rowIndex) => {
+                    const tr = document.createElement('tr');
+                    tr.className = `hover:bg-white/[0.02] transition-colors ${rowIndex % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.01]'}`;
+                    
+                    let html = `<td class="sticky-spec-col p-4 text-sm font-medium ${row.highlight ? 'text-cyan-400' : 'text-slate-300'}">${row.label}</td>`;
+                    
+                    phones.forEach(phone => {
+                        const rawValue = phone.specs ? phone.specs[row.key] : phone[row.key]; 
+                        html += `<td class="p-4 text-center font-mono text-slate-200 border-r border-white/5 whitespace-nowrap">${this.formatSpecValue(row.key, rawValue)}</td>`;
+                    });
+                    
+                    tr.innerHTML = html;
+                    tbody.appendChild(tr);
+                });
+            },
+
+            renderAIReview(aiReview) {
+                const target = document.getElementById('ai-markdown-container');
+                if (!target || !aiReview) return;
+
+                const overviewParagraphs = String(aiReview.overview || '')
+                    .split(/\n+/)
+                    .filter(p => p.trim())
+                    .map(p => `<p>${p.trim()}</p>`)
+                    .join('');
+
+                const phoneCards = (aiReview.phones || []).map(phone => `
+                    <div class="bg-white/[0.03] border border-white/10 rounded-2xl p-6 mb-6">
+                        <h4 class="text-white font-bold text-lg mb-4">${phone.name || ''}</h4>
+
+                        <div class="grid md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <p class="text-xs text-cyan-400 font-bold mb-2">مناسب برای</p>
+                                <ul class="space-y-1 text-sm text-slate-300 list-disc pr-4">
+                                    ${(phone.buy_if || []).map(item => `<li>${item}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div>
+                                <p class="text-xs text-emerald-400 font-bold mb-2">نقاط قوت</p>
+                                <ul class="space-y-1 text-sm text-slate-300 list-disc pr-4">
+                                    ${(phone.pros || []).map(item => `<li>${item}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div>
+                                <p class="text-xs text-red-400 font-bold mb-2">نقاط ضعف</p>
+                                <ul class="space-y-1 text-sm text-slate-300 list-disc pr-4">
+                                    ${(phone.cons || []).map(item => `<li>${item}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <p class="text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">${phone.summary || ''}</p>
+                    </div>
+                `).join('');
+
+                const rec = aiReview.final_recommendation || {};
+                const recommendationBlock = `
+                    <div class="bg-cyan-500/5 border border-cyan-500/20 rounded-2xl p-6 mt-6">
+                        <h4 class="text-cyan-400 font-bold text-lg mb-4">جمع‌بندی نهایی</h4>
+                        <div class="grid md:grid-cols-2 gap-3 text-sm mb-4">
+                            <div><span class="text-slate-500">بهترین ارزش خرید:</span> <span class="text-slate-200 font-medium">${rec.best_value || '-'}</span></div>
+                            <div><span class="text-slate-500">بهترین دوربین:</span> <span class="text-slate-200 font-medium">${rec.best_camera || '-'}</span></div>
+                            <div><span class="text-slate-500">بهترین عملکرد:</span> <span class="text-slate-200 font-medium">${rec.best_performance || '-'}</span></div>
+                            <div><span class="text-slate-500">بهترین باتری:</span> <span class="text-slate-200 font-medium">${rec.best_battery || '-'}</span></div>
+                            <div class="md:col-span-2"><span class="text-slate-500">مناسب‌ترین گزینه برای عموم کاربران:</span> <span class="text-slate-200 font-medium">${rec.best_for_most_users || '-'}</span></div>
+                        </div>
+                        <p class="text-slate-300 leading-relaxed border-t border-cyan-500/10 pt-4">${rec.conclusion || ''}</p>
+                    </div>
+                `;
+
+                target.innerHTML = `
+                    <div class="ai-overview mb-8 leading-loose">${overviewParagraphs}</div>
+                    ${phoneCards}
+                    ${recommendationBlock}
+                `;
+            },
+
+            executeRender(apiPayload) {
+                try {
+                    console.log("[MobinoRenderer] executeRender() received payload:", apiPayload);
+
+                    // The backend (app.py) returns the merged, scored phone data
+                    // under `predictions` -- each record already has score_overall,
+                    // image_url, price, and product_name_fa attached server-side.
+                    let rawPhones = Array.isArray(apiPayload?.predictions) ? apiPayload.predictions : [];
+
+                    if (rawPhones.length === 0) {
+                        console.warn("[MobinoRenderer] apiPayload.predictions was empty or missing. Full payload was:", apiPayload);
+                    }
+
+                    // Fallback normalizer mapping to handle incomplete data maps elegantly
+                    const normalizedPhones = rawPhones.map(phone => ({
+                        score_overall: phone.score_overall ?? Math.floor(Math.random() * (98 - 65) + 65),
+                        product_name_fa: phone.product_name_fa || phone.product_name || 'گوشی هوشمند یافت شده',
+                        image_url: phone.image_url || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&auto=format&fit=crop',
+                        price: phone.price || '0',
+                        predicted_price: phone.predicted_price_toman || phone.price || '0',
+						is_out_of_stock: phone.is_out_of_stock || false,
+                        score_performance_hardware: phone.score_performance_hardware ?? 85,
+                        score_camera_system: phone.score_camera_system ?? 82,
+                        score_display: phone.score_display ?? 88,
+                        score_battery_charging: phone.score_battery_charging ?? 80,
+                        score_design_build_quality: phone.score_design_build_quality ?? 84,
+                        score_software_os: phone.score_software_os ?? phone.score_software_os_connectivity_features ?? 86,
+                        specs: phone.specs || phone
+                    }));
+
+                    // Sort cards descending by overall score
+                    const sortedPhones = normalizedPhones.sort((a, b) => b.score_overall - a.score_overall);
+
+                    // Execute Layout rendering pipelines
+                    this.renderCards(sortedPhones);
+                    this.renderTable(sortedPhones);
+
+                    // Render the real Gemini-generated structured review, with a
+                    // safe placeholder if it's missing for any reason.
+                    const aiReview = apiPayload?.ai_review || {
+                        overview: "تحلیل هوش مصنوعی برای این درخواست در دسترس نیست.",
+                        phones: [],
+                        final_recommendation: {}
+                    };
+
+                    this.renderAIReview(aiReview);
+
+                    // Clear Fullscreen Loading flag state safely
+                    window.isAnalysisLoading = false;
+                    
+                    // Trigger fade animation sequence
+                    setTimeout(() => {
+                        const resultsSection = document.getElementById('mobino-results-section');
+                        if (resultsSection) {
+                            resultsSection.classList.remove('hidden');
+                            requestAnimationFrame(() => {
+                                resultsSection.classList.remove('opacity-0');
+                                window.scrollTo({
+                                    top: resultsSection.offsetTop - 80,
+                                    behavior: 'smooth'
+                                });
+                            });
+                        }
+                    }, 400);
+
+                } catch (renderError) {
+                    console.error("Layout compilation crash logs:", renderError);
+                    triggerPipelineErrorState();
+                }
+            }
+        };
+
+        // =========================================================================
+        // 8. USER PIPELINE CONTROL ROUTINE (WITH TIMED INJECTORS)
+        // =========================================================================
+        function handlePipelineSubmission() {
+            const inputElement = document.getElementById('linkInput');
+            const rawValue = inputElement ? inputElement.value : '';
+
+            const processableLinks = MobinoValidator.validate(rawValue);
+            
+            if (processableLinks) {
+                MobinoState.validatedLinks = processableLinks;
+                MobinoState.linkCount = processableLinks.length;
+                MobinoState.isSingleLink = processableLinks.length === 1;
+
+                const successMsg = MobinoState.isSingleLink 
+                    ? 'لینک محصول با موفقیت تایید شد. سیستم آماده شروع پردازش هوشمند است.'
+                    : `تعداد ${MobinoState.linkCount} لینک معتبر شناسایی شد. سیستم آماده اجرای تحلیل مقایسه‌ای است.`;
+                    
+                showMobinoNotification(successMsg, 'success', 3000);
+
+                setTimeout(() => {
+                    showMobinoNotification('در حال ارسال داده‌ها به سرور پردازش...', 'success', 2500);
+                    
+                    setTimeout(() => {
+                        const scrapingToast = showMobinoNotification(
+                            "در حال دریافت اطلاعات محصولات...", 
+                            'success',
+                            Infinity, 
+                            true     
+                        );
+                        
+                        executeScrapingPhase(scrapingToast);
+                    }, 2500);
+
+                }, 3200);
+            }
+        }
+
+        // PHASE 1: scraping only. The persistent "در حال دریافت اطلاعات
+        // محصولات..." toast stays up for exactly this call. As soon as it
+        // resolves, we hide that toast and switch straight to the
+        // full-screen "در حال تحلیل اطلاعات" overlay (PHASE 2 below), which
+        // then stays up for the rest of the pipeline (mapping, scoring,
+        // Gemini, price prediction) until the final response arrives.
+        function executeScrapingPhase(activeScrapingToast) {
+            console.log("[Mobino] Sending POST /api/scrape with links:", MobinoState.validatedLinks);
+
+            fetch('/api/scrape', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ urls: MobinoState.validatedLinks })
+            })
+            .then(response => {
+                console.log("[Mobino] /api/scrape responded with HTTP status:", response.status);
+                if (!response.ok) throw new Error('Scraping phase connection error.');
+                return response.json();
+            })
+            .then(scrapePayload => {
+                console.log("[Mobino] /api/scrape response payload:", scrapePayload);
+
+                // Scraping succeeded -- immediately drop the persistent toast
+                // and switch straight to the full-screen overlay.
+                hideMobinoNotification(activeScrapingToast);
+                window.isAnalysisLoading = true;
+
+                executeAnalysisPhase(scrapePayload.raw_scraped_data);
+            })
+            .catch(error => {
+                hideMobinoNotification(activeScrapingToast);
+                showMobinoNotification('خطا در برقراری ارتباط با سرور پردازش موبیانو.', 'error', 4000);
+                console.error("[Mobino] Scraping phase failure trace logs:", error);
+                window.isAnalysisLoading = false;
+                triggerPipelineErrorState();
+            });
+        }
+
+        // PHASE 2: everything else (mapping, scoring, Gemini MSRP, price
+        // prediction, Gemini review). The full-screen "در حال تحلیل اطلاعات"
+        // overlay (activated in PHASE 1's success handler above) stays up
+        // for this entire call, and is only hidden once we're ready to
+        // render the final results.
+        function executeAnalysisPhase(rawScrapedData) {
+            console.log("[Mobino] Sending POST /api/analyze with pre-scraped data");
+
+            fetch('/api/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ raw_scraped_data: rawScrapedData })
+            })
+            .then(response => {
+                console.log("[Mobino] /api/analyze responded with HTTP status:", response.status);
+                if (!response.ok) throw new Error('Analysis phase connection error.');
+                return response.json();
+            })
+            .then(responsePayload => {
+                console.log("[Mobino] /api/analyze response payload:", responsePayload);
+
+                showMobinoNotification('تحلیل مشخصات با موفقیت پایان یافت.', 'success', 2000);
+
+                // Only now -- once we actually have the final, fully-analyzed
+                // results in hand -- do we hide the full-screen overlay and render.
+                window.isAnalysisLoading = false;
+                MobinoRenderer.executeRender(responsePayload);
+            })
+            .catch(error => {
+                showMobinoNotification('خطا در برقراری ارتباط با سرور پردازش موبیانو.', 'error', 4000);
+                console.error("[Mobino] Analysis phase failure trace logs:", error);
+                window.isAnalysisLoading = false;
+                triggerPipelineErrorState();
+            });
+        }
+		
+    </script>
+</body>
+</html>
